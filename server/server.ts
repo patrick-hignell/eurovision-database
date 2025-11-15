@@ -3,11 +3,14 @@ import * as Path from 'node:path'
 
 import fruitRoutes from './routes/fruits.ts'
 
+import entriesRoutes from './routes/entries.ts'
+
 const server = express()
 
 server.use(express.json())
 
 server.use('/api/v1/fruits', fruitRoutes)
+server.use('/api/v1/entries', entriesRoutes)
 
 if (process.env.NODE_ENV === 'production') {
   server.use(express.static(Path.resolve('public')))
