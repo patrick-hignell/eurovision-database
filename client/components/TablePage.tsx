@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useEntries } from '../hooks/useEntries'
+import { useEntriesWithImages } from '../hooks/useEntriesWithImages'
 import Spreadsheet from './Spreadsheet'
-import { Entry } from '../../models/entry'
+import { EntryWithImages } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 
@@ -14,9 +14,9 @@ export default function TablePage() {
     //delete: deleteEntry,
     //add: addEntry,
     //edit: editEntry,
-  } = useEntries()
+  } = useEntriesWithImages()
 
-  const blankEntry: Entry = {
+  const blankEntry: EntryWithImages = {
     id: -1,
     country: '',
     year: '',
@@ -27,10 +27,12 @@ export default function TablePage() {
     points: '',
     link: '',
     costume: '',
+    images: [],
   }
 
-  const [entries, setEntries] = useState<Entry[]>([])
-  const [selectedEntry, setSelectedEntry] = useState<Entry>(blankEntry)
+  const [entries, setEntries] = useState<EntryWithImages[]>([])
+  const [selectedEntry, setSelectedEntry] =
+    useState<EntryWithImages>(blankEntry)
 
   useEffect(() => {
     if (data) {
@@ -38,7 +40,7 @@ export default function TablePage() {
     }
   }, [data])
 
-  function onCellClick(entry: Entry) {
+  function onCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
   }
 
@@ -49,7 +51,7 @@ export default function TablePage() {
     <div>
       <h1 className="text-3xl font-bold underline">Table</h1>
       <InfoPanel {...selectedEntry} />
-      <Gallery />
+      <Gallery {...selectedEntry} />
       <div className="flex justify-center">
         {entries && (
           <Spreadsheet

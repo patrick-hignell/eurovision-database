@@ -1,8 +1,8 @@
-import { Entry } from '../../models/entry'
+import { EntryWithImages } from '../../models/entry'
 import Row from './Row'
 interface Props {
-  entries: Entry[]
-  onCellClick: (entry: Entry) => void
+  entries: EntryWithImages[]
+  onCellClick: (entry: EntryWithImages) => void
   selectedId: number
 }
 

@@ -1,13 +1,13 @@
-import { Entry } from '../../models/entry'
+import { EntryWithImages } from '../../models/entry'
 
 interface Props {
-  entry: Entry
-  onCellClick: (entry: Entry) => void
+  entry: EntryWithImages
+  onCellClick: (entry: EntryWithImages) => void
   selected: boolean
 }
 
 export default function Row({ entry, onCellClick, selected }: Props) {
-  function handleCellClick(clickedEntry: Entry) {
+  function handleCellClick(clickedEntry: EntryWithImages) {
     onCellClick(clickedEntry)
   }
 

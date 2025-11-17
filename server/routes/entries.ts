@@ -19,6 +19,20 @@ router.get('/', async (req, res) => {
   }
 })
 
+router.get('/with-images', async (req, res) => {
+  try {
+    const entries = await db.getAllEntriesWithImages()
+    res.status(StatusCodes.OK).json(entries)
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message)
+    } else {
+      console.error('something went wrong')
+    }
+    res.sendStatus(500)
+  }
+})
+
 // router.get('/:id', async (req, res) => {
 //   try {
 //     const id = Number(req.params.id)

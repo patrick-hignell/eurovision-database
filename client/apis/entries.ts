@@ -1,11 +1,16 @@
 import request from 'superagent'
-import { Entry, EntryData } from '../../models/entry.ts'
+import { Entry, EntryData, EntryWithImages } from '../../models/entry.ts'
 
 const rootURL = new URL(`/api/v1`, document.baseURI)
 
 export async function getAllEntries(): Promise<Entry[]> {
   const response = await request.get(`${rootURL}/entries`)
   return response.body as Entry[]
+}
+
+export async function getAllEntriesWithImages(): Promise<EntryWithImages[]> {
+  const response = await request.get(`${rootURL}/entries/with-images`)
+  return response.body as EntryWithImages[]
 }
 
 export async function addEntry(entry: EntryData): Promise<Entry> {
