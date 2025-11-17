@@ -5,13 +5,13 @@ export default function Gallery(entry: EntryWithImages) {
     <div>
       <p>Gallery</p>
       <div className="relative w-full overflow-hidden">
-        <div className="flex justify-around overflow-x-scroll">
+        <div className="flex justify-evenly overflow-x-scroll">
           {entry.images.map((image) => (
             <img
               className="w-[40rem]"
               key={image}
               alt={image}
-              src={`/public/images/${image}.png`}
+              src={`/images/${image}.png`}
             />
           ))}
         </div>
