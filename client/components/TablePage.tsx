@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useEntriesWithImages } from '../hooks/useEntriesWithImages'
 import Spreadsheet from './Spreadsheet'
-import { EntryWithImages } from '../../models/entry'
+import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 
@@ -29,19 +29,59 @@ export default function TablePage() {
     costume: '',
     images: [],
   }
+  const initialFilter: FilterEntry = {
+    country: { isExact: false, value: '' },
+    year: { isExact: false, value: '' },
+    artist: { isExact: false, value: '' },
+    song: { isExact: false, value: '' },
+    language: { isExact: false, value: '' },
+    position: { isExact: false, value: '' },
+    points: { isExact: false, value: '' },
+    link: { isExact: false, value: '' },
+    costume: { isExact: false, value: '' },
+  }
 
   const [entries, setEntries] = useState<EntryWithImages[]>([])
+  const [filter, setFilter] = useState<FilterEntry>(initialFilter)
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
 
   useEffect(() => {
-    if (data) {
+    if (data && filter) {
+      const categoryOptions = [
+        'country',
+        'year',
+        'artist',
+        'song',
+        'language',
+        'position',
+        'points',
+        'link',
+        'costume',
+      ]
+      const preFilteredEntries = entries
+      //console.log('prefiltered entries: ')
+      //console.log(preFilteredEntries)
+      const postFilteredEntries = preFilteredEntries.filter((entry) =>
+        categoryOptions.every((option) =>
+          String(entry[option as Category])
+            .toLowerCase()
+            .includes(String(filter[option as Category].value).toLowerCase()),
+        ),
+      )
+
+      setEntries([...postFilteredEntries])
+    } else if (data) {
       setEntries([...data])
     }
-  }, [data])
+  }, [data, filter])
 
   function onCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
+  }
+
+  function onFilterChange(category: Category, value: number | string) {
+    setFilter({ ...filter, [category]: { ...filter[category], value: value } })
   }
 
   if (isPending) return <h2>Is Loading...</h2>
@@ -53,11 +93,13 @@ export default function TablePage() {
       <InfoPanel {...selectedEntry} />
       <Gallery {...selectedEntry} />
       <div className="flex justify-center">
-        {entries && (
+        {entries && filter && (
           <Spreadsheet
             entries={entries}
             onCellClick={onCellClick}
             selectedId={selectedEntry.id}
+            onFilterChange={onFilterChange}
+            filter={filter}
           />
         )}
       </div>

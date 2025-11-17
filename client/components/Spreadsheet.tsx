@@ -1,15 +1,20 @@
-import { EntryWithImages } from '../../models/entry'
+import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
+import FilterRow from './FilterRow'
 import Row from './Row'
 interface Props {
   entries: EntryWithImages[]
   onCellClick: (entry: EntryWithImages) => void
+  onFilterChange: (category: Category, value: number | string) => void
   selectedId: number
+  filter: FilterEntry
 }
 
 export default function Spreadsheet({
   entries,
   onCellClick,
+  onFilterChange,
   selectedId,
+  filter,
 }: Props) {
   console.log(selectedId)
   return (
@@ -29,6 +34,7 @@ export default function Spreadsheet({
           </tr>
         </thead>
         <tbody className="font-normal">
+          <FilterRow filter={filter} onFilterChange={onFilterChange} />
           {entries.map((entry) => (
             <Row
               onCellClick={onCellClick}

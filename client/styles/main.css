@@ -2,3 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input {
+  background: transparent;
+  width: 100px;
+}
