@@ -47,34 +47,42 @@ export default function TablePage() {
     useState<EntryWithImages>(blankEntry)
 
   useEffect(() => {
-    if (data && filter) {
-      const categoryOptions = [
-        'country',
-        'year',
-        'artist',
-        'song',
-        'language',
-        'position',
-        'points',
-        'link',
-        'costume',
-      ]
-      const preFilteredEntries = entries
-      //console.log('prefiltered entries: ')
-      //console.log(preFilteredEntries)
-      const postFilteredEntries = preFilteredEntries.filter((entry) =>
-        categoryOptions.every((option) =>
-          String(entry[option as Category])
-            .toLowerCase()
-            .includes(String(filter[option as Category].value).toLowerCase()),
-        ),
-      )
-
-      setEntries([...postFilteredEntries])
-    } else if (data) {
+    if (data) {
       setEntries([...data])
+      console.log(entries)
     }
-  }, [data, filter])
+  }, [data])
+
+  // useEffect(() => {
+  //   if (data && filter) {
+  //     const categoryOptions = [
+  //       'country',
+  //       'year',
+  //       'artist',
+  //       'song',
+  //       'language',
+  //       'position',
+  //       'points',
+  //       'link',
+  //       'costume',
+  //     ]
+  //     const preFilteredEntries = entries
+  //     //console.log('prefiltered entries: ')
+  //     //console.log(preFilteredEntries)
+  //     const postFilteredEntries = preFilteredEntries.filter((entry) =>
+  //       categoryOptions.every((option) =>
+  //         String(entry[option as Category])
+  //           .toLowerCase()
+  //           .includes(String(filter[option as Category].value).toLowerCase()),
+  //       ),
+  //     )
+  //     console.log(entries)
+  //     setEntries([...postFilteredEntries])
+  //   } else if (data) {
+  //     setEntries([...data])
+  //     console.log(entries)
+  //   }
+  // }, [data, filter])
 
   function onCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
