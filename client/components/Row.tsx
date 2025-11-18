@@ -17,7 +17,7 @@ export default function Row({ entry, onCellClick, selected }: Props) {
 
   return (
     <tr
-      className={`border-collapse border border-white border-opacity-50 bg-white bg-opacity-25 ${selected ? `bg-yellow-200 bg-opacity-50` : ``}`}
+      className={`border-collapse border border-white border-opacity-50 bg-white bg-opacity-25 ${selected ? `bg-white-200 bg-opacity-60` : ``}`}
     >
       <td onClick={() => handleCellClick(entry)}>{entry.country}</td>
       <td onClick={() => handleCellClick(entry)}>{entry.year}</td>

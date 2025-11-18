@@ -25,15 +25,15 @@ export interface Image {
 }
 
 export interface FilterEntry {
-  country: { isExact: boolean; value: string }
-  year: { isExact: boolean; value: number | string }
-  artist: { isExact: boolean; value: string }
-  song: { isExact: boolean; value: string }
-  language: { isExact: boolean; value: string }
-  position: { isExact: boolean; value: number | string }
-  points: { isExact: boolean; value: number | string }
-  link: { isExact: boolean; value: string }
-  costume: { isExact: boolean; value: number | string }
+  country: { isExact: boolean; value: string; dir: string }
+  year: { isExact: boolean; value: number | string; dir: string }
+  artist: { isExact: boolean; value: string; dir: string }
+  song: { isExact: boolean; value: string; dir: string }
+  language: { isExact: boolean; value: string; dir: string }
+  position: { isExact: boolean; value: number | string; dir: string }
+  points: { isExact: boolean; value: number | string; dir: string }
+  link: { isExact: boolean; value: string; dir: string }
+  costume: { isExact: boolean; value: number | string; dir: string }
 }
 
 export type Category =

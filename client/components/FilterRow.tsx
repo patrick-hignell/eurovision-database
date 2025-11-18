@@ -11,9 +11,10 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
   }
 
   return (
-    <tr>
+    <tr className="border-collapse border border-white border-opacity-50 bg-white bg-opacity-25">
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="country"
@@ -24,6 +25,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="year"
@@ -34,6 +36,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="artist"
@@ -44,6 +47,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="song"
@@ -54,6 +58,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="language"
@@ -64,6 +69,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="position"
@@ -74,6 +80,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="points"
@@ -84,6 +91,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="link"
@@ -94,6 +102,7 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
       </td>
       <td>
         <input
+          className="filter"
           type="text"
           placeholder=""
           name="costume"
