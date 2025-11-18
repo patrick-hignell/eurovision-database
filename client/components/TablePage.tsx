@@ -82,45 +82,55 @@ export default function TablePage() {
     ]
     const postFilteredEntries = preFilteredEntries.filter((entry) =>
       categoryOptions.every((option) => {
-        const filterStringTrim = String(filter[option as Category].value)
-          .replace(/\s/g, '')
-          .toLowerCase()
-        const filterString = String(
-          filter[option as Category].value,
-        ).toLowerCase()
-        const entryString = String(entry[option as Category]).toLowerCase()
-        if (filterStringTrim.charAt(0) === '=' && filterStringTrim.length > 1) {
-          return (
-            Number(entryString) === Number(filterStringTrim.slice(1)) ||
-            entryString === filterString.slice(1)
-          )
-        }
-        if (
-          filterStringTrim.slice(0, 2) === '>=' &&
-          filterStringTrim.length > 2
-        ) {
-          return Number(entryString) >= Number(filterStringTrim.slice(2))
-        }
-        if (
-          filterStringTrim.slice(0, 2) === '<=' &&
-          filterStringTrim.length > 2
-        ) {
-          return Number(entryString) <= Number(filterStringTrim.slice(2))
-        }
-        if (filterStringTrim.charAt(0) === '>' && filterStringTrim.length > 1) {
-          return Number(entryString) > Number(filterStringTrim.slice(1))
-        }
-        if (filterStringTrim.charAt(0) === '<' && filterStringTrim.length > 1) {
-          return Number(entryString) < Number(filterStringTrim.slice(1))
-        }
-        if (filterString.slice(0, 2) === '-=') {
-          if (filterString.length === 2) {
-            return entryString.length > 0
+        const filterValueArray = String(filter[option as Category].value).split(
+          ';',
+        )
+        return filterValueArray.every((filterValue) => {
+          const filterStringTrim = filterValue.replace(/\s/g, '').toLowerCase()
+          const filterString = filterValue.toLowerCase()
+          const entryString = String(entry[option as Category]).toLowerCase()
+          if (
+            filterStringTrim.charAt(0) === '=' &&
+            filterStringTrim.length > 1
+          ) {
+            return (
+              Number(entryString) === Number(filterStringTrim.slice(1)) ||
+              entryString === filterString.slice(1)
+            )
           }
-          return !entryString.includes(filterString.slice(2))
-        }
+          if (
+            filterStringTrim.slice(0, 2) === '>=' &&
+            filterStringTrim.length > 2
+          ) {
+            return Number(entryString) >= Number(filterStringTrim.slice(2))
+          }
+          if (
+            filterStringTrim.slice(0, 2) === '<=' &&
+            filterStringTrim.length > 2
+          ) {
+            return Number(entryString) <= Number(filterStringTrim.slice(2))
+          }
+          if (
+            filterStringTrim.charAt(0) === '>' &&
+            filterStringTrim.length > 1
+          ) {
+            return Number(entryString) > Number(filterStringTrim.slice(1))
+          }
+          if (
+            filterStringTrim.charAt(0) === '<' &&
+            filterStringTrim.length > 1
+          ) {
+            return Number(entryString) < Number(filterStringTrim.slice(1))
+          }
+          if (filterString.slice(0, 2) === '-=') {
+            if (filterString.length === 2) {
+              return entryString.length > 0
+            }
+            return !entryString.includes(filterString.slice(2))
+          }
 
-        return entryString.includes(filterString)
+          return entryString.includes(filterString)
+        })
       }),
     )
 

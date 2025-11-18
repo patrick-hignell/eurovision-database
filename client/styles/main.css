@@ -10,5 +10,41 @@
 } */
 
 input.filter {
-  @apply w-[100px] bg-transparent text-center;
+  @apply bg-transparent text-center;
+}
+
+.country {
+  @apply w-[100px];
+}
+
+.year {
+  @apply w-[100px];
+}
+
+.artist {
+  @apply w-[221.25px];
+}
+
+.song {
+  @apply w-[203.8px];
+}
+
+.language {
+  @apply w-[257.117px];
+}
+
+.position {
+  @apply w-[100px];
+}
+
+.points {
+  @apply w-[100px];
+}
+
+.link {
+  @apply w-[437.967px];
+}
+
+.costume {
+  @apply w-[100px];
 }

@@ -21,7 +21,7 @@ export default function HeaderRow({
 
   return (
     <tr>
-      <th className="min-w-[100px]">
+      <th className="header country">
         <button onClick={() => handleHeaderClick('country')}>Country</button>
         <button onClick={() => handleCaretClick('country')}>
           <i
@@ -29,7 +29,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[100px]">
+      <th className="header year">
         <button onClick={() => handleHeaderClick('year')}>Year</button>
         <button onClick={() => handleCaretClick('year')}>
           <i
@@ -37,7 +37,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[221.25px]">
+      <th className="header artist">
         <button onClick={() => handleHeaderClick('artist')}>Artist</button>
         <button onClick={() => handleCaretClick('artist')}>
           <i
@@ -45,7 +45,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[203.8px]">
+      <th className="header song">
         <button onClick={() => handleHeaderClick('song')}>Song</button>
         <button onClick={() => handleCaretClick('song')}>
           <i
@@ -53,7 +53,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[257.117px]">
+      <th className="header language">
         <button onClick={() => handleHeaderClick('language')}>Language</button>
         <button onClick={() => handleCaretClick('language')}>
           <i
@@ -61,7 +61,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[100px]">
+      <th className="header position">
         <button onClick={() => handleHeaderClick('position')}>Position</button>
         <button onClick={() => handleCaretClick('position')}>
           <i
@@ -69,7 +69,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[100px]">
+      <th className="header points">
         <button onClick={() => handleHeaderClick('points')}>Points</button>
         <button onClick={() => handleCaretClick('points')}>
           <i
@@ -77,7 +77,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[437.967px]">
+      <th className="header link">
         <button onClick={() => handleHeaderClick('link')}>Link</button>
         <button onClick={() => handleCaretClick('link')}>
           <i
@@ -85,7 +85,7 @@ export default function HeaderRow({
           ></i>
         </button>
       </th>
-      <th className="min-w-[100px]">
+      <th className="header costume">
         <button onClick={() => handleHeaderClick('costume')}>Costume</button>
         <button onClick={() => handleCaretClick('costume')}>
           <i
