@@ -23,3 +23,26 @@ export interface Image {
   entryId: number
   image: string
 }
+
+export interface FilterEntry {
+  country: { isExact: boolean; value: string; dir: string }
+  year: { isExact: boolean; value: number | string; dir: string }
+  artist: { isExact: boolean; value: string; dir: string }
+  song: { isExact: boolean; value: string; dir: string }
+  language: { isExact: boolean; value: string; dir: string }
+  position: { isExact: boolean; value: number | string; dir: string }
+  points: { isExact: boolean; value: number | string; dir: string }
+  link: { isExact: boolean; value: string; dir: string }
+  costume: { isExact: boolean; value: number | string; dir: string }
+}
+
+export type Category =
+  | 'country'
+  | 'year'
+  | 'artist'
+  | 'song'
+  | 'language'
+  | 'position'
+  | 'points'
+  | 'link'
+  | 'costume'
