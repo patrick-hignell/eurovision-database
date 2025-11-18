@@ -113,6 +113,13 @@ export default function TablePage() {
         if (filterStringTrim.charAt(0) === '<' && filterStringTrim.length > 1) {
           return Number(entryString) < Number(filterStringTrim.slice(1))
         }
+        if (filterString.slice(0, 2) === '-=') {
+          if (filterString.length === 2) {
+            return entryString.length > 0
+          }
+          return !entryString.includes(filterString.slice(2))
+        }
+
         return entryString.includes(filterString)
       }),
     )
