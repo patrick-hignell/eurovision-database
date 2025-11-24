@@ -11,10 +11,10 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
   }
 
   return (
-    <tr className="border-collapse border border-white border-opacity-50 bg-white bg-opacity-25">
-      <td>
+    <tr className="flex border-collapse border border-white border-opacity-50 bg-white bg-opacity-25">
+      <td className="country filter">
         <input
-          className="country filter"
+          className="filter"
           type="text"
           placeholder=""
           name="country"
@@ -23,9 +23,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="year filter">
         <input
-          className="year filter"
+          className="filter"
           type="text"
           placeholder=""
           name="year"
@@ -34,9 +34,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="artist filter">
         <input
-          className="artist filter"
+          className="filter"
           type="text"
           placeholder=""
           name="artist"
@@ -45,9 +45,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="song filter">
         <input
-          className="song filter"
+          className="filter"
           type="text"
           placeholder=""
           name="song"
@@ -56,9 +56,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="language filter">
         <input
-          className="language filter"
+          className="filter"
           type="text"
           placeholder=""
           name="language"
@@ -67,9 +67,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="position filter">
         <input
-          className="position filter"
+          className="filter"
           type="text"
           placeholder=""
           name="position"
@@ -78,9 +78,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="points filter">
         <input
-          className="points filter"
+          className="filter"
           type="text"
           placeholder=""
           name="points"
@@ -89,9 +89,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="link filter">
         <input
-          className="link filter"
+          className="filter"
           type="text"
           placeholder=""
           name="link"
@@ -100,9 +100,9 @@ const FilterRow = ({ filter, onFilterChange }: Props) => {
           onChange={(e) => handleFilterChange(e)}
         />
       </td>
-      <td>
+      <td className="costume filter">
         <input
-          className="costume filter"
+          className="filter"
           type="text"
           placeholder=""
           name="costume"

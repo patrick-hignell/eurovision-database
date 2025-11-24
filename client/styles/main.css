@@ -9,8 +9,12 @@
   width: 100px;
 } */
 
+td {
+  @apply overflow-hidden overflow-ellipsis whitespace-nowrap;
+}
+
 input.filter {
-  @apply bg-transparent text-center;
+  @apply w-full bg-transparent text-center;
 }
 
 .country {
@@ -42,7 +46,7 @@ input.filter {
 }
 
 .link {
-  @apply w-[437.967px];
+  @apply w-[257.117px];
 }
 
 .costume {

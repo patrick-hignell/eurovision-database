@@ -168,7 +168,7 @@ export default function TablePage() {
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div>
+    <div className="w-5/6 min-w-0">
       <h1 className="text-3xl font-bold underline">Table</h1>
       <InfoPanel {...selectedEntry} />
       <Gallery {...selectedEntry} />

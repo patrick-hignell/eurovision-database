@@ -23,16 +23,16 @@ export default function Spreadsheet({
 }: Props) {
   // console.log(selectedId)
   return (
-    <div className="w-5/6">
-      <table>
-        <thead>
+    <div className="">
+      <table className="w-full table-fixed">
+        <thead className="block">
           <HeaderRow
             filter={filter}
             onHeaderClick={onHeaderClick}
             onCaretClick={onCaretClick}
           />
         </thead>
-        <tbody className="font-normal">
+        <tbody className="block max-h-[54rem] w-fit overflow-y-scroll font-normal">
           <FilterRow filter={filter} onFilterChange={onFilterChange} />
           {entries.map((entry) => (
             <Row

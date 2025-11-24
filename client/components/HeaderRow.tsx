@@ -20,7 +20,7 @@ export default function HeaderRow({
   }
 
   return (
-    <tr>
+    <tr className="flex">
       <th className="header country">
         <button onClick={() => handleHeaderClick('country')}>Country</button>
         <button onClick={() => handleCaretClick('country')}>

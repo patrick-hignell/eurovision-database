@@ -23,7 +23,7 @@ function IconList({
   filter,
 }: Props) {
   return (
-    <div className="flex flex-col items-center overflow-scroll">
+    <div className="flex flex-col items-center">
       <div>
         <table>
           <thead>
@@ -38,7 +38,7 @@ function IconList({
           </tbody>
         </table>
       </div>
-      <div className="flex h-[54rem] w-5/6 flex-wrap gap-4 overflow-scroll py-4">
+      <div className="flex h-[54rem] flex-wrap gap-4 overflow-scroll py-4">
         {entries.map((entry) => (
           <Icon
             key={entry.id}
