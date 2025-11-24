@@ -4,6 +4,7 @@ import Spreadsheet from './Spreadsheet'
 import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
+import IconList from './IconList'
 
 export default function TablePage() {
   const {
@@ -50,6 +51,7 @@ export default function TablePage() {
   const [sortCategory, setSortCategory] = useState<Category>('country')
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
+  const [isSpreadsheet, setIsSpreadsheet] = useState(true)
 
   useEffect(() => {
     if (data) {
@@ -66,6 +68,7 @@ export default function TablePage() {
         setPreFilteredEntries(postSortedEntries)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, filter, sortCategory])
 
   useEffect(() => {
@@ -135,6 +138,7 @@ export default function TablePage() {
     )
 
     setEntries([...postFilteredEntries])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preFilteredEntries])
 
   function handleCellClick(entry: EntryWithImages) {
@@ -156,6 +160,10 @@ export default function TablePage() {
     // console.log({ ...filter, [category]: { ...filter[category], dir: newDir } })
   }
 
+  function handleDisplayType() {
+    setIsSpreadsheet(!isSpreadsheet)
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -164,9 +172,21 @@ export default function TablePage() {
       <h1 className="text-3xl font-bold underline">Table</h1>
       <InfoPanel {...selectedEntry} />
       <Gallery {...selectedEntry} />
+      <button onClick={handleDisplayType}>Spreadsheet</button>
       <div className="flex justify-center">
-        {entries && filter && (
+        {entries && filter && isSpreadsheet && (
           <Spreadsheet
+            entries={entries}
+            onCellClick={handleCellClick}
+            selectedId={selectedEntry.id}
+            onFilterChange={handleFilterChange}
+            onHeaderClick={handleHeaderClick}
+            onCaretClick={handleCaretClick}
+            filter={filter}
+          />
+        )}
+        {entries && !isSpreadsheet && (
+          <IconList
             entries={entries}
             onCellClick={handleCellClick}
             selectedId={selectedEntry.id}
