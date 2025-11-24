@@ -26,11 +26,11 @@ input.filter {
 }
 
 .artist {
-  @apply w-[221.25px];
+  @apply w-[260px];
 }
 
 .song {
-  @apply w-[203.8px];
+  @apply w-[260px];
 }
 
 .language {

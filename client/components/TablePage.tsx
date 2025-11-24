@@ -168,11 +168,17 @@ export default function TablePage() {
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="w-5/6 min-w-0">
-      <h1 className="text-3xl font-bold underline">Table</h1>
+    <div className="flex w-5/6 min-w-0 flex-col gap-4 pb-8 pt-8">
+      <h1 className="text-3xl font-bold underline">
+        Eurovision Costume Database
+      </h1>
       <InfoPanel {...selectedEntry} />
       <Gallery {...selectedEntry} />
-      <button onClick={handleDisplayType}>Spreadsheet</button>
+      <button onClick={handleDisplayType}>
+        <i
+          className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
+        ></i>
+      </button>
       <div className="flex justify-center">
         {entries && filter && isSpreadsheet && (
           <Spreadsheet
