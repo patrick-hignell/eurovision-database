@@ -27,8 +27,18 @@ function IconList({ entry, onCellClick, selected }: Props) {
           <i className="bi bi-card-image text-9xl"></i>
         )}
       </div>
-      <p>{entry.country}</p>
-      <p>{entry.year}</p>
+      <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {entry.year}
+      </p>
+      <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {entry.country}
+      </p>
+      {/* <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {entry.artist}
+      </p> */}
+      <p className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+        {entry.song}
+      </p>
     </button>
   )
 }

@@ -212,12 +212,18 @@ function sortIt(
   category: Category,
   dir: string,
 ) {
-  const numbers = tempEntries.filter(
-    (entry) => typeof entry[category] === 'number',
-  )
-  const strings = tempEntries.filter(
-    (entry) => typeof entry[category] === 'string',
-  )
+  // const numbers = tempEntries.filter(
+  //   (entry) => typeof entry[category] === 'number',
+  // )
+  // const strings = tempEntries.filter(
+  //   (entry) => typeof entry[category] === 'string',
+  // )
+
+  const numbers = tempEntries.filter((entry) => !isNaN(Number(entry[category])))
+  const strings = tempEntries.filter((entry) => isNaN(Number(entry[category])))
+
+  console.log('number length: ' + numbers.length)
+  console.log('string length: ' + strings.length)
 
   numbers.sort((a, b) =>
     dir === 'asc'
@@ -230,7 +236,8 @@ function sortIt(
       : (b[category] as string).localeCompare(a[category] as string),
   ) // Sort strings alphabetically
 
-  const resortedEntries = [...numbers, ...strings]
+  const resortedEntries =
+    dir === 'asc' ? [...strings, ...numbers] : [...numbers, ...strings]
   //console.log(resortedEntries)
 
   return resortedEntries
