@@ -222,8 +222,8 @@ function sortIt(
   const numbers = tempEntries.filter((entry) => !isNaN(Number(entry[category])))
   const strings = tempEntries.filter((entry) => isNaN(Number(entry[category])))
 
-  console.log('number length: ' + numbers.length)
-  console.log('string length: ' + strings.length)
+  // console.log('number length: ' + numbers.length)
+  // console.log('string length: ' + strings.length)
 
   numbers.sort((a, b) =>
     dir === 'asc'

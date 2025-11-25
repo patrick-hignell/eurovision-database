@@ -11,9 +11,9 @@ export default function Row({ entry, onCellClick, selected }: Props) {
     onCellClick(clickedEntry)
   }
 
-  if (selected) {
-    console.log('selected id:' + entry.id)
-  }
+  // if (selected) {
+  //   console.log('selected id:' + entry.id)
+  // }
 
   return (
     <tr
