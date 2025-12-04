@@ -21,7 +21,7 @@ export async function getAllEntriesWithImages(): Promise<EntryWithImages[]> {
         .map((element) => element.image),
     }
   })
-
+  console.log(entries)
   return entries
 }
 

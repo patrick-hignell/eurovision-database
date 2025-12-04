@@ -12,7 +12,7 @@ export async function seed(knex) {
   )
   const data = JSON.parse(json)
   // Deletes ALL existing entries
-  await knex('entries').del()
+  await knex('entries').truncate()
   //console.log(data.entries)
   // Inserts seed entries
   // data.entries.forEach(async (entry) => await knex('entries').insert(entry))
