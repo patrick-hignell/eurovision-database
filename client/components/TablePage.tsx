@@ -5,6 +5,7 @@ import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 import IconList from './IconList'
+import BasicSearch from './BasicSearch'
 
 export default function TablePage() {
   const {
@@ -179,7 +180,8 @@ export default function TablePage() {
           className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
         ></i>
       </button>
-      <div className="flex justify-center">
+      <div className="flex flex-col justify-center">
+        <BasicSearch />
         {entries && filter && isSpreadsheet && (
           <Spreadsheet
             entries={entries}

@@ -46,3 +46,31 @@ export type Category =
   | 'points'
   | 'link'
   | 'costume'
+
+export type SearchStringOptions = 'includes' | 'exact' | 'excludes'
+
+export type SearchNumberOptions =
+  | 'includes'
+  | 'excact'
+  | 'excludes'
+  | '>'
+  | '>='
+  | '<'
+  | '<='
+export interface SearchCategories {
+  all: { options: SearchNumberOptions }
+  country: { options: SearchStringOptions }
+  year: { options: SearchNumberOptions }
+  artist: { options: SearchStringOptions }
+  song: { options: SearchStringOptions }
+  language: { options: SearchStringOptions }
+  position: { options: SearchNumberOptions }
+  points: { options: SearchNumberOptions }
+  link: { options: SearchStringOptions }
+  costume: { options: SearchNumberOptions }
+}
+
+export interface OptionType {
+  value: string
+  label: string
+}
