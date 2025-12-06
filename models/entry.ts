@@ -1,3 +1,5 @@
+import { SingleValue } from 'react-select'
+
 export interface EntryData {
   id: number
   country: string
@@ -73,4 +75,10 @@ export interface SearchCategories {
 export interface OptionType {
   value: string
   label: string
+}
+
+export interface SearchArrayElement {
+  categoryOption: SingleValue<OptionType>
+  functionOption: SingleValue<OptionType>
+  searchOption: SingleValue<OptionType>
 }

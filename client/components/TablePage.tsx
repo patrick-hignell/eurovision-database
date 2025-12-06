@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useEntriesWithImages } from '../hooks/useEntriesWithImages'
 import Spreadsheet from './Spreadsheet'
-import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
+import {
+  Category,
+  EntryWithImages,
+  FilterEntry,
+  SearchArrayElement,
+} from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 import IconList from './IconList'
@@ -48,6 +53,7 @@ export default function TablePage() {
   const [preFilteredEntries, setPreFilteredEntries] = useState<
     EntryWithImages[]
   >([])
+  const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
   const [sortCategory, setSortCategory] = useState<Category>('country')
   const [selectedEntry, setSelectedEntry] =
@@ -137,10 +143,46 @@ export default function TablePage() {
         })
       }),
     )
+    const postSimpleSearch = postFilteredEntries.filter((entry) =>
+      searchArray?.every((searchElement) => {
+        if (!searchElement.functionOption) {
+          console.log('no function option')
+          return true
+        }
+        if (searchElement.categoryOption?.value === 'all') {
+          if (searchElement.functionOption?.value === 'excludes') {
+            return Object.keys(entry).every((entryCategory) =>
+              checkSearchOption(
+                entry[entryCategory as Category],
+                searchElement.functionOption?.value as string,
+                searchElement.searchOption?.value as string,
+              ),
+            )
+          } else {
+            return Object.keys(entry).some((entryCategory) =>
+              checkSearchOption(
+                entry[entryCategory as Category],
+                searchElement.functionOption?.value as string,
+                searchElement.searchOption?.value as string,
+              ),
+            )
+          }
+        } else if (searchElement.categoryOption) {
+          return checkSearchOption(
+            entry[searchElement.categoryOption.value as Category],
+            searchElement.functionOption?.value as string,
+            searchElement.searchOption?.value as string,
+          )
+        } else {
+          console.log('soemthing went wrong')
+          return true
+        }
+      }),
+    )
 
-    setEntries([...postFilteredEntries])
+    setEntries([...postSimpleSearch])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preFilteredEntries])
+  }, [preFilteredEntries, searchArray])
 
   function handleCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
@@ -165,6 +207,10 @@ export default function TablePage() {
     setIsSpreadsheet(!isSpreadsheet)
   }
 
+  function handleSearchArrayChange(newSearchArray: SearchArrayElement[]) {
+    setSearchArray(newSearchArray)
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -181,7 +227,7 @@ export default function TablePage() {
         ></i>
       </button>
       <div className="flex flex-col justify-center">
-        <BasicSearch />
+        <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
         {entries && filter && isSpreadsheet && (
           <Spreadsheet
             entries={entries}
@@ -243,4 +289,35 @@ function sortIt(
   //console.log(resortedEntries)
 
   return resortedEntries
+}
+
+function checkSearchOption(
+  entryValue: string | number,
+  operation: string,
+  searchValue: string | number,
+) {
+  switch (operation) {
+    case 'includes':
+      return String(entryValue)
+        .toLowerCase()
+        .includes(String(searchValue).toLowerCase())
+    case 'exact':
+      return entryValue == searchValue
+    case 'excludes':
+      return String(searchValue).length !== 0
+        ? !String(entryValue)
+            .toLowerCase()
+            .includes(String(searchValue).toLowerCase())
+        : String(entryValue).length > 0
+    case '>':
+      return Number(entryValue) > Number(searchValue)
+    case '>=':
+      return Number(entryValue) >= Number(searchValue)
+    case '<':
+      return Number(entryValue) < Number(searchValue)
+    case '<=':
+      return Number(entryValue) <= Number(searchValue)
+    default:
+      return false
+  }
 }
