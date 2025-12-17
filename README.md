@@ -3,7 +3,7 @@
 ## Setup
 
 ### What's included
-
+<!-- 
 This repo includes:
 
 * a single, simple API endpoint (`/api/v1/fruits`)
@@ -13,7 +13,7 @@ This repo includes:
 * an API client module (`client/apis/fruits.js`)
 * configuration for Vitest and testing library
 * configuration for server-side debugging in VS Code
-* configuration for preprocessing css with tailwind support
+* configuration for preprocessing css with tailwind support -->
 
 ### Installation
 
