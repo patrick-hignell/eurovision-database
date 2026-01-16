@@ -82,3 +82,8 @@ export interface SearchArrayElement {
   functionOption: SingleValue<OptionType>
   searchOption: SingleValue<OptionType>
 }
+
+export interface TableOptions {
+  tableMode: string
+  size: number
+}

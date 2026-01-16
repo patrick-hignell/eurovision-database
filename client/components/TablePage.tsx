@@ -6,11 +6,14 @@ import {
   EntryWithImages,
   FilterEntry,
   SearchArrayElement,
+  TableOptions,
 } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 import IconList from './IconList'
 import BasicSearch from './BasicSearch'
+import DialogModal from './DialogModal'
+import Options from './Options'
 
 export default function TablePage() {
   const {
@@ -59,6 +62,11 @@ export default function TablePage() {
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isSpreadsheet, setIsSpreadsheet] = useState(true)
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const [tableOptions, setTableOptions] = useState<TableOptions>({
+    tableMode: 'Icons',
+    size: 5,
+  })
 
   useEffect(() => {
     if (data) {
@@ -211,6 +219,15 @@ export default function TablePage() {
     setSearchArray(newSearchArray)
   }
 
+  const handleOptionsOpen = () => setIsOptionsOpen(true)
+  const handleOptionsClose = () => setIsOptionsOpen(false)
+
+  function handleModeChange(newMode: string) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, tableMode: newMode }
+    })
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -221,14 +238,25 @@ export default function TablePage() {
       </h1>
       <InfoPanel {...selectedEntry} />
       <Gallery {...selectedEntry} />
-      <button onClick={handleDisplayType}>
-        <i
-          className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
-        ></i>
-      </button>
+      <div className="flex justify-around">
+        <button onClick={handleDisplayType}>
+          <i
+            className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
+          ></i>
+        </button>
+        <button onClick={handleOptionsOpen}>
+          <i className={`bi bi-gear-fill text-6xl`}></i>
+        </button>
+      </div>
+      <DialogModal isOpen={isOptionsOpen} onClose={handleOptionsClose}>
+        <Options
+          handleOptionsClose={handleOptionsClose}
+          updateModeChange={handleModeChange}
+        />
+      </DialogModal>
       <div className="flex flex-col justify-center">
         <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
-        {entries && filter && isSpreadsheet && (
+        {entries && filter && tableOptions.tableMode === 'Spreadsheet' && (
           <Spreadsheet
             entries={entries}
             onCellClick={handleCellClick}
@@ -239,7 +267,7 @@ export default function TablePage() {
             filter={filter}
           />
         )}
-        {entries && !isSpreadsheet && (
+        {entries && tableOptions.tableMode === 'Icons' && (
           <IconList
             entries={entries}
             onCellClick={handleCellClick}
