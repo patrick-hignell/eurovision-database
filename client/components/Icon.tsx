@@ -14,7 +14,7 @@ function IconList({ entry, onCellClick, selected }: Props) {
   return (
     <button
       onClick={() => handleCellClick(entry)}
-      className={`h-50 w-60 border-collapse overflow-hidden rounded-lg border border-white border-opacity-50 bg-white bg-opacity-25 ${selected ? `bg-white-200 bg-opacity-60` : ``}`}
+      className={`w-60 border-collapse overflow-hidden rounded-lg border border-white border-opacity-50 bg-white bg-opacity-25 ${selected ? `bg-white-200 bg-opacity-60` : ``}`}
     >
       <div className="flex h-[133.95px] flex-col justify-center overflow-hidden align-middle">
         {entry.images[0] ? (
