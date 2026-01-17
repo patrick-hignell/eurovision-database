@@ -4,14 +4,13 @@ interface Props {
   entry: EntryWithImages
   onCellClick: (entry: EntryWithImages) => void
   selected: boolean
+  size: number
 }
 
-function IconList({ entry, onCellClick, selected }: Props) {
+function IconList({ entry, onCellClick, selected, size = 5 }: Props) {
   function handleCellClick(clickedEntry: EntryWithImages) {
     onCellClick(clickedEntry)
   }
-
-  const size = 1
 
   return (
     <button

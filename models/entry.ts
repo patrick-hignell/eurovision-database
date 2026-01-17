@@ -85,5 +85,6 @@ export interface SearchArrayElement {
 
 export interface TableOptions {
   tableMode: string
-  size: number
+  gallerySize: number
+  iconSize: number
 }

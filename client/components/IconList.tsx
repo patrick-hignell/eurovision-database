@@ -11,6 +11,7 @@ interface Props {
   onCaretClick: (category: Category) => void
   selectedId: number
   filter: FilterEntry
+  size: number
 }
 
 function IconList({
@@ -21,6 +22,7 @@ function IconList({
   onHeaderClick,
   selectedId,
   filter,
+  size,
 }: Props) {
   return (
     <div className="flex flex-col items-center">
@@ -45,6 +47,7 @@ function IconList({
             entry={entry}
             onCellClick={onCellClick}
             selected={entry.id == selectedId}
+            size={size}
           />
         ))}
       </div>

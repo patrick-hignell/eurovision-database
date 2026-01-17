@@ -65,7 +65,8 @@ export default function TablePage() {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
   const [tableOptions, setTableOptions] = useState<TableOptions>({
     tableMode: 'Icons',
-    size: 5,
+    gallerySize: 5,
+    iconSize: 5,
   })
 
   useEffect(() => {
@@ -228,6 +229,18 @@ export default function TablePage() {
     })
   }
 
+  function handleGallerySizeChange(newSize: number) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, gallerySize: newSize }
+    })
+  }
+
+  function handleIconSizeChange(newSize: number) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, iconSize: newSize }
+    })
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -237,7 +250,7 @@ export default function TablePage() {
         Eurovision Costume Database
       </h1>
       <InfoPanel {...selectedEntry} />
-      <Gallery {...selectedEntry} />
+      <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       <div className="flex justify-around">
         <button onClick={handleDisplayType}>
           <i
@@ -252,6 +265,8 @@ export default function TablePage() {
         <Options
           handleOptionsClose={handleOptionsClose}
           updateModeChange={handleModeChange}
+          updateGallerySizeChange={handleGallerySizeChange}
+          updateIconSizeChange={handleIconSizeChange}
         />
       </DialogModal>
       <div className="flex flex-col justify-center">
@@ -276,6 +291,7 @@ export default function TablePage() {
             onHeaderClick={handleHeaderClick}
             onCaretClick={handleCaretClick}
             filter={filter}
+            size={tableOptions.iconSize}
           />
         )}
       </div>

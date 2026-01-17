@@ -1,10 +1,15 @@
 import { EntryWithImages } from '../../models/entry'
 
-export default function Gallery(entry: EntryWithImages) {
+interface Props {
+  entry: EntryWithImages
+  size: number
+}
+
+export default function Gallery({ entry, size }: Props) {
   return (
-    <div className="flex justify-center">
-      <div className="flex min-h-[359.767px] w-full min-w-0 justify-evenly gap-4 overflow-x-scroll bg-white bg-opacity-25">
-        <div className="aspect-video min-h-[359.767px]">
+    <div className="flex justify-center" style={{ height: `${size * 5}rem` }}>
+      <div className="flex w-full min-w-0 justify-evenly gap-4 overflow-x-scroll bg-white bg-opacity-25">
+        <div className="aspect-video">
           <iframe
             className="h-full w-full"
             src={`https://www.youtube.com/embed/${entry.link.split('=')[1]}`}
@@ -17,7 +22,7 @@ export default function Gallery(entry: EntryWithImages) {
 
         {entry.images.map((image) => (
           <img
-            className="w-[40rem]"
+            className=""
             key={image}
             alt={image}
             src={`/images/${image}.png`}

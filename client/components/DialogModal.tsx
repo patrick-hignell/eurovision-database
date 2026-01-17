@@ -39,7 +39,10 @@ const DialogModal: React.FC<DialogModalProps> = ({
   }, [isOpen, onClose]) // Re-run effect when isOpen or onClose changes
 
   return (
-    <dialog ref={dialogRef} className="dialog-modal bg-transparent">
+    <dialog
+      ref={dialogRef}
+      className="dialog-modal h-full w-full bg-transparent"
+    >
       {children}
     </dialog>
   )
