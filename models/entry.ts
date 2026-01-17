@@ -87,4 +87,5 @@ export interface TableOptions {
   tableMode: string
   gallerySize: number
   iconSize: number
+  searchMode: string
 }

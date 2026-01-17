@@ -12,6 +12,7 @@ interface Props {
   selectedId: number
   filter: FilterEntry
   size: number
+  hasFilterRow: boolean
 }
 
 function IconList({
@@ -23,6 +24,7 @@ function IconList({
   selectedId,
   filter,
   size,
+  hasFilterRow,
 }: Props) {
   return (
     <div className="flex flex-col items-center">
@@ -36,7 +38,9 @@ function IconList({
             />
           </thead>
           <tbody className="font-normal">
-            <FilterRow filter={filter} onFilterChange={onFilterChange} />
+            {hasFilterRow && (
+              <FilterRow filter={filter} onFilterChange={onFilterChange} />
+            )}
           </tbody>
         </table>
       </div>

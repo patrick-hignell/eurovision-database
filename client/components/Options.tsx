@@ -5,6 +5,7 @@ import Select, { SingleValue } from 'react-select'
 interface Props {
   handleOptionsClose: () => void
   updateModeChange: (newMode: string) => void
+  updateSearchModeChange: (newMode: string) => void
   updateGallerySizeChange: (newSize: number) => void
   updateIconSizeChange: (newSize: number) => void
 }
@@ -12,12 +13,17 @@ interface Props {
 function Options({
   handleOptionsClose,
   updateModeChange,
+  updateSearchModeChange,
   updateGallerySizeChange,
   updateIconSizeChange,
 }: Props) {
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
   const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
   const [iconSize, setIconSize] = useState({ value: '5', label: '5' })
+  const [searchMode, setSearchMode] = useState({
+    value: 'Basic',
+    label: 'Basic',
+  })
 
   const modeList: OptionType[] = [
     { value: 'Icons', label: 'Icons' },
@@ -37,9 +43,19 @@ function Options({
     { value: '10', label: '10' },
   ]
 
+  const searchModeList: OptionType[] = [
+    { value: 'Basic', label: 'Basic' },
+    { value: 'Advanced', label: 'Advanced' },
+  ]
+
   function handleModeChange(e: SingleValue<OptionType>) {
     e && setMode(e)
     e && updateModeChange(e.value)
+  }
+
+  function handleSearchModeChange(e: SingleValue<OptionType>) {
+    e && setSearchMode(e)
+    e && updateSearchModeChange(e.value)
   }
 
   function handleGallerySizeChange(e: SingleValue<OptionType>) {
@@ -83,6 +99,16 @@ function Options({
             options={sizeList}
             value={iconSize}
             onChange={(e) => handleIconSizeChange(e)}
+          />
+        </div>
+
+        <div className="flex items-center justify-between p-4">
+          <p className="mr-6">Search Mode:</p>
+          <Select
+            className="w-48"
+            options={searchModeList}
+            value={searchMode}
+            onChange={(e) => handleSearchModeChange(e)}
           />
         </div>
 

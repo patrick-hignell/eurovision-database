@@ -67,6 +67,7 @@ export default function TablePage() {
     tableMode: 'Icons',
     gallerySize: 5,
     iconSize: 5,
+    searchMode: 'Basic',
   })
 
   useEffect(() => {
@@ -229,6 +230,12 @@ export default function TablePage() {
     })
   }
 
+  function handleSearchModeChange(newMode: string) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, searchMode: newMode }
+    })
+  }
+
   function handleGallerySizeChange(newSize: number) {
     setTableOptions((prevOptions) => {
       return { ...prevOptions, gallerySize: newSize }
@@ -265,12 +272,15 @@ export default function TablePage() {
         <Options
           handleOptionsClose={handleOptionsClose}
           updateModeChange={handleModeChange}
+          updateSearchModeChange={handleSearchModeChange}
           updateGallerySizeChange={handleGallerySizeChange}
           updateIconSizeChange={handleIconSizeChange}
         />
       </DialogModal>
       <div className="flex flex-col justify-center">
-        <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
+        {tableOptions.searchMode === 'Basic' && (
+          <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
+        )}
         {entries && filter && tableOptions.tableMode === 'Spreadsheet' && (
           <Spreadsheet
             entries={entries}
@@ -280,6 +290,7 @@ export default function TablePage() {
             onHeaderClick={handleHeaderClick}
             onCaretClick={handleCaretClick}
             filter={filter}
+            hasFilterRow={tableOptions.searchMode === 'Advanced'}
           />
         )}
         {entries && tableOptions.tableMode === 'Icons' && (
@@ -292,6 +303,7 @@ export default function TablePage() {
             onCaretClick={handleCaretClick}
             filter={filter}
             size={tableOptions.iconSize}
+            hasFilterRow={tableOptions.searchMode === 'Advanced'}
           />
         )}
       </div>
