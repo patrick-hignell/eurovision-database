@@ -32,22 +32,26 @@ function IconList({ entry, onCellClick, selected, size = 5 }: Props) {
           ></i>
         )}
       </div>
+      <div className="flex justify-evenly">
+        <p
+          className="overflow-hidden overflow-ellipsis whitespace-nowrap"
+          style={{ fontSize: `${0.2 * size}rem` }}
+        >
+          {entry.country}
+        </p>
+        <p
+          className="whitespace-nowrap pl-1"
+          style={{ fontSize: `${0.2 * size}rem` }}
+        >
+          {entry.year}
+        </p>
+      </div>
       <p
         className="overflow-hidden overflow-ellipsis whitespace-nowrap"
         style={{ fontSize: `${0.2 * size}rem` }}
       >
-        {entry.year}
-      </p>
-      <p
-        className="overflow-hidden overflow-ellipsis whitespace-nowrap"
-        style={{ fontSize: `${0.2 * size}rem` }}
-      >
-        {entry.country}
-      </p>
-      {/* <p className="overflow-hidden overflow-ellipsis whitespace-nowrap"
-      style={{ fontSize: `${1.6 * size}rem` }}>
         {entry.artist}
-      </p> */}
+      </p>
       <p
         className="overflow-hidden overflow-ellipsis whitespace-nowrap"
         style={{ fontSize: `${0.2 * size}rem` }}

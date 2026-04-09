@@ -31,11 +31,13 @@ function IconList({
       <div>
         <table>
           <thead>
-            <HeaderRow
-              filter={filter}
-              onHeaderClick={onHeaderClick}
-              onCaretClick={onCaretClick}
-            />
+            {hasFilterRow && (
+              <HeaderRow
+                filter={filter}
+                onHeaderClick={onHeaderClick}
+                onCaretClick={onCaretClick}
+              />
+            )}
           </thead>
           <tbody className="font-normal">
             {hasFilterRow && (

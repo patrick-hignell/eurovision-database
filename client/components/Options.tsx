@@ -8,6 +8,7 @@ interface Props {
   updateSearchModeChange: (newMode: string) => void
   updateGallerySizeChange: (newSize: number) => void
   updateIconSizeChange: (newSize: number) => void
+  handleResetOptions: () => void
 }
 
 function Options({
@@ -16,6 +17,7 @@ function Options({
   updateSearchModeChange,
   updateGallerySizeChange,
   updateIconSizeChange,
+  handleResetOptions,
 }: Props) {
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
   const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
@@ -68,6 +70,17 @@ function Options({
     e && updateIconSizeChange(Number(e.value))
   }
 
+  function handleReset() {
+    handleResetOptions()
+    setMode({ value: 'Icons', label: 'Icons' })
+    setGallerySize({ value: '5', label: '5' })
+    setIconSize({ value: '5', label: '5' })
+    setSearchMode({
+      value: 'Basic',
+      label: 'Basic',
+    })
+  }
+
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div className="h-fit w-fit rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-12 py-4 outline outline-white">
@@ -111,13 +124,20 @@ function Options({
             onChange={(e) => handleSearchModeChange(e)}
           />
         </div>
-
-        <button
-          className="mt-3 rounded px-4 py-1 outline outline-white"
-          onClick={handleOptionsClose}
-        >
-          Close
-        </button>
+        <div className="flex justify-evenly">
+          <button
+            className="mt-3 rounded px-4 py-1 outline outline-white"
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+          <button
+            className="mt-3 rounded px-4 py-1 outline outline-white"
+            onClick={handleOptionsClose}
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   )

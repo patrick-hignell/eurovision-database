@@ -3,7 +3,7 @@ import db from './connection.ts'
 
 export async function getAllEntries(): Promise<Entry[]> {
   const entries = await db('entries').select()
-  console.log(entries)
+  // console.log(entries)
   return entries
 }
 
@@ -21,7 +21,7 @@ export async function getAllEntriesWithImages(): Promise<EntryWithImages[]> {
         .map((element) => element.image),
     }
   })
-  console.log(entries)
+  // console.log(entries)
   return entries
 }
 

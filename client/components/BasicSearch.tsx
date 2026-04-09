@@ -133,9 +133,13 @@ function BasicSearch({ onSearchArrayChange }: Props) {
       </div>
       <div className="flex justify-center gap-4">
         {searchArray.length > 1 && (
-          <button onClick={handleRemoveSearch}>-</button>
+          <button className="text-2xl" onClick={handleRemoveSearch}>
+            -
+          </button>
         )}
-        <button onClick={handleAddSearch}>+</button>
+        <button className="text-2xl" onClick={handleAddSearch}>
+          +
+        </button>
       </div>
     </div>
   )

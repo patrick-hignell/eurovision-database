@@ -61,14 +61,14 @@ export default function TablePage() {
   const [sortCategory, setSortCategory] = useState<Category>('country')
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
-  const [isSpreadsheet, setIsSpreadsheet] = useState(true)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
-  const [tableOptions, setTableOptions] = useState<TableOptions>({
+  const defaultOptions: TableOptions = {
     tableMode: 'Icons',
     gallerySize: 5,
     iconSize: 5,
     searchMode: 'Basic',
-  })
+  }
+  const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
 
   useEffect(() => {
     if (data) {
@@ -154,7 +154,7 @@ export default function TablePage() {
       }),
     )
     const postSimpleSearch = postFilteredEntries.filter((entry) =>
-      searchArray?.every((searchElement) => {
+      searchArray?.some((searchElement) => {
         if (!searchElement.functionOption) {
           console.log('no function option')
           return true
@@ -184,7 +184,7 @@ export default function TablePage() {
             searchElement.searchOption?.value as string,
           )
         } else {
-          console.log('soemthing went wrong')
+          console.log('something went wrong')
           return true
         }
       }),
@@ -196,6 +196,10 @@ export default function TablePage() {
 
   function handleCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // use 'auto' for an instant jump
+    })
   }
 
   function handleFilterChange(category: Category, value: number | string) {
@@ -211,10 +215,6 @@ export default function TablePage() {
     setSortCategory(category)
     setFilter({ ...filter, [category]: { ...filter[category], dir: newDir } })
     // console.log({ ...filter, [category]: { ...filter[category], dir: newDir } })
-  }
-
-  function handleDisplayType() {
-    setIsSpreadsheet(!isSpreadsheet)
   }
 
   function handleSearchArrayChange(newSearchArray: SearchArrayElement[]) {
@@ -248,6 +248,10 @@ export default function TablePage() {
     })
   }
 
+  function handleResetOptions() {
+    setTableOptions(defaultOptions)
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -259,11 +263,6 @@ export default function TablePage() {
       <InfoPanel {...selectedEntry} />
       <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       <div className="flex justify-around">
-        <button onClick={handleDisplayType}>
-          <i
-            className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
-          ></i>
-        </button>
         <button onClick={handleOptionsOpen}>
           <i className={`bi bi-gear-fill text-6xl`}></i>
         </button>
@@ -275,6 +274,7 @@ export default function TablePage() {
           updateSearchModeChange={handleSearchModeChange}
           updateGallerySizeChange={handleGallerySizeChange}
           updateIconSizeChange={handleIconSizeChange}
+          handleResetOptions={handleResetOptions}
         />
       </DialogModal>
       <div className="flex flex-col justify-center">

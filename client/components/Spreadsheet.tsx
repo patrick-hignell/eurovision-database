@@ -34,7 +34,7 @@ export default function Spreadsheet({
             onCaretClick={onCaretClick}
           />
         </thead>
-        <tbody className="block max-h-[54rem] w-fit overflow-y-scroll font-normal">
+        <tbody className="block max-h-[54rem] overflow-scroll font-normal">
           {hasFilterRow && (
             <FilterRow filter={filter} onFilterChange={onFilterChange} />
           )}
