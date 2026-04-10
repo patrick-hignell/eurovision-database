@@ -15,7 +15,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
           categoryOption: { value: 'all', label: 'All' },
           functionOption: { value: 'includes', label: 'Includes' },
           searchOption: { value: '', label: 'Search' },
-          isAnd: true,
+          isAnd: false,
         },
       ],
   )
@@ -130,7 +130,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
         categoryOption: { value: 'all', label: 'All' },
         functionOption: { value: 'includes', label: 'Includes' },
         searchOption: { value: '', label: 'Search' },
-        isAnd: true,
+        isAnd: false,
       })
       return updatedArray
     })
@@ -140,6 +140,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     setSearchArray((previousArray) => {
       const updatedArray = [...previousArray]
       updatedArray.pop()
+      updatedArray[updatedArray.length - 1].isAnd = false
       return updatedArray
     })
   }

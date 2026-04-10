@@ -46,7 +46,7 @@ function IconList({
           </tbody>
         </table>
       </div>
-      <div className="flex h-[54rem] flex-wrap justify-center gap-4 overflow-scroll py-4">
+      <div className="flex h-[54rem] w-full flex-wrap content-start justify-center gap-4 overflow-scroll py-4">
         {entries.map((entry) => (
           <Icon
             key={entry.id}
