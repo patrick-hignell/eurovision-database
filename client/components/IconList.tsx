@@ -27,9 +27,9 @@ function IconList({
   hasFilterRow,
 }: Props) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center rounded-sm bg-white bg-opacity-10 outline outline-1 outline-white">
       <div>
-        <table>
+        <table className="w-full table-fixed">
           <thead>
             {hasFilterRow && (
               <HeaderRow
@@ -46,7 +46,7 @@ function IconList({
           </tbody>
         </table>
       </div>
-      <div className="flex h-[54rem] w-full flex-wrap content-start justify-center gap-4 overflow-scroll py-4">
+      <div className="flex h-[54rem] w-full flex-wrap content-start justify-center gap-4 overflow-x-hidden overflow-y-scroll py-4">
         {entries.map((entry) => (
           <Icon
             key={entry.id}

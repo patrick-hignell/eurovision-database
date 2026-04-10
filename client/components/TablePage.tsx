@@ -296,17 +296,14 @@ export default function TablePage() {
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="flex w-5/6 min-w-0 flex-col gap-4 pb-8 pt-8">
+    <div className="flex w-5/6 min-w-[32rem] flex-col gap-4 pb-8 pt-8">
       <h1 className="text-3xl font-bold underline">
         Eurovision Costume Database
       </h1>
       <InfoPanel {...selectedEntry} />
-      <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
-      <div className="flex justify-around">
-        <button onClick={handleOptionsOpen}>
-          <i className={`bi bi-gear-fill text-6xl`}></i>
-        </button>
-      </div>
+      {selectedEntry.country != '' && (
+        <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
+      )}
       <DialogModal isOpen={isOptionsOpen} onClose={handleOptionsClose}>
         <Options
           handleOptionsClose={handleOptionsClose}
@@ -318,9 +315,15 @@ export default function TablePage() {
         />
       </DialogModal>
       <div className="flex flex-col justify-center">
+        <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
         {tableOptions.searchMode === 'Basic' && (
           <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
         )}
+        <div className="mb-2 flex w-full flex-row-reverse">
+          <button onClick={handleOptionsOpen}>
+            <i className="bi bi-gear-fill text-3xl"></i>
+          </button>
+        </div>
         {entries && filter && tableOptions.tableMode === 'Spreadsheet' && (
           <Spreadsheet
             entries={entries}

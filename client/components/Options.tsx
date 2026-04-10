@@ -83,60 +83,64 @@ function Options({
 
   return (
     <div className="flex h-full w-full items-center justify-center">
-      <div className="h-fit w-fit rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-12 py-4 outline outline-white">
-        <h2 className="mb-1 text-2xl">Options</h2>
-        <div className="flex items-center justify-between p-4">
-          <p className="mr-6">Display Mode:</p>
-          <Select
-            className="w-48"
-            options={modeList}
-            value={mode}
-            onChange={(e) => handleModeChange(e)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-4">
-          <p className="mr-6">Gallery Size:</p>
-          <Select
-            className="w-48"
-            options={sizeList}
-            value={gallerySize}
-            onChange={(e) => handleGallerySizeChange(e)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-4">
-          <p className="mr-6">Icon Size:</p>
-          <Select
-            className="w-48"
-            options={sizeList}
-            value={iconSize}
-            onChange={(e) => handleIconSizeChange(e)}
-          />
-        </div>
-
-        <div className="flex items-center justify-between p-4">
-          <p className="mr-6">Search Mode:</p>
-          <Select
-            className="w-48"
-            options={searchModeList}
-            value={searchMode}
-            onChange={(e) => handleSearchModeChange(e)}
-          />
-        </div>
-        <div className="flex justify-evenly">
+      <div className="h-fit w-fit rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-4 pb-6 pt-4 outline outline-white">
+        <div className="flex w-full flex-row-reverse">
           <button
-            className="mt-3 rounded px-4 py-1 outline outline-white"
-            onClick={handleReset}
-          >
-            Reset
-          </button>
-          <button
-            className="mt-3 rounded px-4 py-1 outline outline-white"
+            className=" h-8  w-8 rounded bg-white bg-opacity-25 outline outline-white"
             onClick={handleOptionsClose}
           >
-            Close
+            <i className="bi bi-x text-3xl"></i>
           </button>
+        </div>
+        <div className="px-12">
+          <h2 className="mb-1 text-2xl">Options</h2>
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Display Mode:</p>
+            <Select
+              className="w-48"
+              options={modeList}
+              value={mode}
+              onChange={(e) => handleModeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Gallery Size:</p>
+            <Select
+              className="w-48"
+              options={sizeList}
+              value={gallerySize}
+              onChange={(e) => handleGallerySizeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Icon Size:</p>
+            <Select
+              className="w-48"
+              options={sizeList}
+              value={iconSize}
+              onChange={(e) => handleIconSizeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Search Mode:</p>
+            <Select
+              className="w-48"
+              options={searchModeList}
+              value={searchMode}
+              onChange={(e) => handleSearchModeChange(e)}
+            />
+          </div>
+          <div className="flex justify-evenly">
+            <button
+              className="mt-3 rounded bg-white bg-opacity-25 px-4 py-1 outline outline-white"
+              onClick={handleReset}
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
     </div>

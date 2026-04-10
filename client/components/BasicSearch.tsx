@@ -152,13 +152,13 @@ function BasicSearch({ onSearchArrayChange }: Props) {
           <div key={index}>
             <div className="flex items-center gap-1">
               <Select
-                className="w-48"
+                className="w-40 lg:w-48"
                 options={searchCategories}
                 value={searchArray[index].categoryOption}
                 onChange={(e) => handleCategoryChange(e, index)}
               />
               <Select
-                className="w-48"
+                className="w-40 lg:w-48"
                 options={
                   searchArray[index].categoryOption?.value === 'country' ||
                   searchArray[index].categoryOption?.value === 'artist' ||
@@ -172,7 +172,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
                 onChange={(e) => handleFunctionChange(e, index)}
               />
               <input
-                className="w-48 rounded-sm p-1"
+                className="w-40 rounded-sm p-1 lg:w-48"
                 value={searchArray[index].searchOption?.value}
                 onChange={(e) => handleSearchChange(e, index)}
               />
@@ -209,11 +209,11 @@ function BasicSearch({ onSearchArrayChange }: Props) {
       </div>
       <div className="flex justify-center gap-4">
         {searchArray.length > 1 && (
-          <button className="text-2xl" onClick={handleRemoveSearch}>
+          <button className="text-3xl" onClick={handleRemoveSearch}>
             -
           </button>
         )}
-        <button className="text-2xl" onClick={handleAddSearch}>
+        <button className="text-3xl" onClick={handleAddSearch}>
           +
         </button>
       </div>
