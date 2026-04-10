@@ -12,6 +12,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
       categoryOption: { value: 'all', label: 'All' },
       functionOption: { value: 'includes', label: 'Includes' },
       searchOption: { value: '', label: 'Search' },
+      required: false,
     },
   ])
   const searchCategories: OptionType[] = [
@@ -78,6 +79,17 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     })
   }
 
+  function handleRequiredChange(
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) {
+    setSearchArray((previousArray) => {
+      const updatedArray = [...previousArray]
+      updatedArray[index].required = e.target.checked
+      return updatedArray
+    })
+  }
+
   function handleAddSearch() {
     setSearchArray((previousArray) => {
       const updatedArray = [...previousArray]
@@ -85,6 +97,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
         categoryOption: { value: 'all', label: 'All' },
         functionOption: { value: 'includes', label: 'Includes' },
         searchOption: { value: '', label: 'Search' },
+        required: false,
       })
       return updatedArray
     })
@@ -102,7 +115,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     <div className="flex flex-col items-center">
       <div className="flex flex-col gap-1">
         {searchArray.map((element, index) => (
-          <div key={index} className="flex gap-1">
+          <div key={index} className="flex items-center gap-1">
             <Select
               className="w-48"
               options={searchCategories}
@@ -127,6 +140,12 @@ function BasicSearch({ onSearchArrayChange }: Props) {
               className="w-48 rounded-sm p-1"
               value={searchArray[index].searchOption?.value}
               onChange={(e) => handleSearchChange(e, index)}
+            />
+            <p>Required? </p>
+            <input
+              type="checkbox"
+              checked={searchArray[index].required}
+              onChange={(e) => handleRequiredChange(e, index)}
             />
           </div>
         ))}

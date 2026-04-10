@@ -153,42 +153,84 @@ export default function TablePage() {
         })
       }),
     )
-    const postSimpleSearch = postFilteredEntries.filter((entry) =>
-      searchArray?.some((searchElement) => {
-        if (!searchElement.functionOption) {
-          console.log('no function option')
-          return true
-        }
-        if (searchElement.categoryOption?.value === 'all') {
-          if (searchElement.functionOption?.value === 'excludes') {
-            return Object.keys(entry).every((entryCategory) =>
-              checkSearchOption(
-                entry[entryCategory as Category],
-                searchElement.functionOption?.value as string,
-                searchElement.searchOption?.value as string,
-              ),
+    const postSimpleSearch = postFilteredEntries.filter((entry) => {
+      const requiredSearches = searchArray
+        ?.filter((searchTerm) => searchTerm.required)
+        .every((searchElement) => {
+          if (!searchElement.functionOption) {
+            console.log('no function option')
+            return true
+          }
+          if (searchElement.categoryOption?.value === 'all') {
+            if (searchElement.functionOption?.value === 'excludes') {
+              return Object.keys(entry).every((entryCategory) =>
+                checkSearchOption(
+                  entry[entryCategory as Category],
+                  searchElement.functionOption?.value as string,
+                  searchElement.searchOption?.value as string,
+                ),
+              )
+            } else {
+              return Object.keys(entry).some((entryCategory) =>
+                checkSearchOption(
+                  entry[entryCategory as Category],
+                  searchElement.functionOption?.value as string,
+                  searchElement.searchOption?.value as string,
+                ),
+              )
+            }
+          } else if (searchElement.categoryOption) {
+            return checkSearchOption(
+              entry[searchElement.categoryOption.value as Category],
+              searchElement.functionOption?.value as string,
+              searchElement.searchOption?.value as string,
             )
           } else {
-            return Object.keys(entry).some((entryCategory) =>
-              checkSearchOption(
-                entry[entryCategory as Category],
+            console.log('something went wrong')
+            return true
+          }
+        })
+      if (!requiredSearches) {
+        return false
+      } else {
+        return searchArray
+          ?.filter((searchTerm) => !searchTerm.required)
+          .some((searchElement) => {
+            if (!searchElement.functionOption) {
+              console.log('no function option')
+              return false
+            }
+            if (searchElement.categoryOption?.value === 'all') {
+              if (searchElement.functionOption?.value === 'excludes') {
+                return Object.keys(entry).every((entryCategory) =>
+                  checkSearchOption(
+                    entry[entryCategory as Category],
+                    searchElement.functionOption?.value as string,
+                    searchElement.searchOption?.value as string,
+                  ),
+                )
+              } else {
+                return Object.keys(entry).some((entryCategory) =>
+                  checkSearchOption(
+                    entry[entryCategory as Category],
+                    searchElement.functionOption?.value as string,
+                    searchElement.searchOption?.value as string,
+                  ),
+                )
+              }
+            } else if (searchElement.categoryOption) {
+              return checkSearchOption(
+                entry[searchElement.categoryOption.value as Category],
                 searchElement.functionOption?.value as string,
                 searchElement.searchOption?.value as string,
-              ),
-            )
-          }
-        } else if (searchElement.categoryOption) {
-          return checkSearchOption(
-            entry[searchElement.categoryOption.value as Category],
-            searchElement.functionOption?.value as string,
-            searchElement.searchOption?.value as string,
-          )
-        } else {
-          console.log('something went wrong')
-          return true
-        }
-      }),
-    )
+              )
+            } else {
+              console.log('something went wrong')
+              return false
+            }
+          })
+      }
+    })
 
     setEntries([...postSimpleSearch])
     // eslint-disable-next-line react-hooks/exhaustive-deps
