@@ -56,7 +56,17 @@ export default function TablePage() {
   const [preFilteredEntries, setPreFilteredEntries] = useState<
     EntryWithImages[]
   >([])
-  const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
+  const [searchArray, setSearchArray] = useState<SearchArrayElement[]>(
+    () =>
+      extractSearchArrayFromUrl() ?? [
+        {
+          categoryOption: { value: 'all', label: 'All' },
+          functionOption: { value: 'includes', label: 'Includes' },
+          searchOption: { value: '', label: 'Search' },
+          isAnd: true,
+        },
+      ],
+  )
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
   const [sortCategory, setSortCategory] = useState<Category>('country')
   const [selectedEntry, setSelectedEntry] =
@@ -154,87 +164,91 @@ export default function TablePage() {
       }),
     )
     const postSimpleSearch = postFilteredEntries.filter((entry) => {
-      const requiredSearches = searchArray
-        ?.filter((searchTerm) => searchTerm.required)
-        .every((searchElement) => {
-          if (!searchElement.functionOption) {
-            console.log('no function option')
-            return true
-          }
-          if (searchElement.categoryOption?.value === 'all') {
-            if (searchElement.functionOption?.value === 'excludes') {
-              return Object.keys(entry).every((entryCategory) =>
-                checkSearchOption(
-                  entry[entryCategory as Category],
-                  searchElement.functionOption?.value as string,
-                  searchElement.searchOption?.value as string,
-                ),
-              )
-            } else {
-              return Object.keys(entry).some((entryCategory) =>
-                checkSearchOption(
-                  entry[entryCategory as Category],
-                  searchElement.functionOption?.value as string,
-                  searchElement.searchOption?.value as string,
-                ),
-              )
-            }
-          } else if (searchElement.categoryOption) {
-            return checkSearchOption(
-              entry[searchElement.categoryOption.value as Category],
-              searchElement.functionOption?.value as string,
-              searchElement.searchOption?.value as string,
-            )
-          } else {
-            console.log('something went wrong')
-            return true
-          }
-        })
-      if (!requiredSearches) {
-        return false
-      } else {
-        return searchArray
-          ?.filter((searchTerm) => !searchTerm.required)
-          .some((searchElement) => {
-            if (!searchElement.functionOption) {
-              console.log('no function option')
-              return false
-            }
-            if (searchElement.categoryOption?.value === 'all') {
-              if (searchElement.functionOption?.value === 'excludes') {
-                return Object.keys(entry).every((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              } else {
-                return Object.keys(entry).some((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              }
-            } else if (searchElement.categoryOption) {
-              return checkSearchOption(
-                entry[searchElement.categoryOption.value as Category],
+      return searchArray?.every((searchElement) => {
+        if (!searchElement.functionOption) {
+          console.log('no function option')
+          return true
+        }
+        if (searchElement.categoryOption?.value === 'all') {
+          if (searchElement.functionOption?.value === 'excludes') {
+            return Object.keys(entry).every((entryCategory) =>
+              checkSearchOption(
+                entry[entryCategory as Category],
                 searchElement.functionOption?.value as string,
                 searchElement.searchOption?.value as string,
-              )
-            } else {
-              console.log('something went wrong')
-              return false
-            }
-          })
-      }
+              ),
+            )
+          } else {
+            return Object.keys(entry).some((entryCategory) =>
+              checkSearchOption(
+                entry[entryCategory as Category],
+                searchElement.functionOption?.value as string,
+                searchElement.searchOption?.value as string,
+              ),
+            )
+          }
+        } else if (searchElement.categoryOption) {
+          return checkSearchOption(
+            entry[searchElement.categoryOption.value as Category],
+            searchElement.functionOption?.value as string,
+            searchElement.searchOption?.value as string,
+          )
+        } else {
+          console.log('something went wrong')
+          return true
+        }
+      })
     })
 
     setEntries([...postSimpleSearch])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preFilteredEntries, searchArray])
+
+  useEffect(() => {
+    updateUrl()
+  }, [searchArray])
+
+  function updateUrl() {
+    const params = new URLSearchParams()
+    searchArray?.forEach((element, index) => {
+      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
+      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
+      params.set(`s${index}_q`, element.searchOption?.value ?? '')
+      params.set(`s${index}_and`, String(element.isAnd))
+    })
+
+    params.set('s_count', String(searchArray?.length))
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    window.history.pushState({}, '', newUrl)
+  }
+
+  function extractSearchArrayFromUrl(): SearchArrayElement[] | null {
+    const params = new URLSearchParams(window.location.search)
+    const count = parseInt(params.get('s_count') ?? '0', 10)
+
+    if (!count) return null
+
+    const searchArray: SearchArrayElement[] = []
+
+    for (let i = 0; i < count; i++) {
+      const catValue = params.get(`s${i}_cat`)
+      const fnValue = params.get(`s${i}_fn`)
+      const qValue = params.get(`s${i}_q`)
+      const isAnd = params.get(`s${i}_and`)
+
+      if (catValue === null || fnValue === null || qValue === null) return null
+
+      searchArray.push({
+        categoryOption: { value: catValue, label: catValue },
+        functionOption: { value: fnValue, label: fnValue },
+        searchOption: { value: qValue, label: 'Search' },
+        isAnd: isAnd !== 'false',
+      })
+    }
+
+    return searchArray
+  }
 
   function handleCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)

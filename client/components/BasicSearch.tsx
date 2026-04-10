@@ -1,20 +1,24 @@
 import Select, { SingleValue } from 'react-select'
 import { OptionType, SearchArrayElement } from '../../models/entry'
 import { ChangeEvent, useEffect, useState } from 'react'
+import Switch from 'react-switch'
 
 interface Props {
   onSearchArrayChange: (searchArray: SearchArrayElement[]) => void
 }
 
 function BasicSearch({ onSearchArrayChange }: Props) {
-  const [searchArray, setSearchArray] = useState<SearchArrayElement[]>([
-    {
-      categoryOption: { value: 'all', label: 'All' },
-      functionOption: { value: 'includes', label: 'Includes' },
-      searchOption: { value: '', label: 'Search' },
-      required: false,
-    },
-  ])
+  const [searchArray, setSearchArray] = useState<SearchArrayElement[]>(
+    () =>
+      extractSearchArrayFromUrl() ?? [
+        {
+          categoryOption: { value: 'all', label: 'All' },
+          functionOption: { value: 'includes', label: 'Includes' },
+          searchOption: { value: '', label: 'Search' },
+          isAnd: true,
+        },
+      ],
+  )
   const searchCategories: OptionType[] = [
     { value: 'all', label: 'All' },
     { value: 'country', label: 'Country' },
@@ -44,9 +48,41 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     { value: 'excludes', label: 'Excludes' },
   ]
 
+  // const AndOrFunctions: OptionType[] = [
+  //   { value: 'true', label: 'And' },
+  //   { value: 'false', label: 'Or' },
+  // ]
+
   useEffect(() => {
     onSearchArrayChange(searchArray)
   }, [searchArray])
+
+  function extractSearchArrayFromUrl(): SearchArrayElement[] | null {
+    const params = new URLSearchParams(window.location.search)
+    const count = parseInt(params.get('s_count') ?? '0', 10)
+
+    if (!count) return null
+
+    const searchArray: SearchArrayElement[] = []
+
+    for (let i = 0; i < count; i++) {
+      const catValue = params.get(`s${i}_cat`)
+      const fnValue = params.get(`s${i}_fn`)
+      const qValue = params.get(`s${i}_q`)
+      const isAnd = params.get(`s${i}_and`)
+
+      if (catValue === null || fnValue === null || qValue === null) return null
+
+      searchArray.push({
+        categoryOption: { value: catValue, label: catValue },
+        functionOption: { value: fnValue, label: fnValue },
+        searchOption: { value: qValue, label: 'Search' },
+        isAnd: isAnd !== 'false',
+      })
+    }
+
+    return searchArray
+  }
 
   function handleCategoryChange(e: SingleValue<OptionType>, index: number) {
     setSearchArray((previousArray) => {
@@ -79,13 +115,10 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     })
   }
 
-  function handleRequiredChange(
-    e: ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) {
+  function handleIsAndChange(e: boolean, index: number) {
     setSearchArray((previousArray) => {
       const updatedArray = [...previousArray]
-      updatedArray[index].required = e.target.checked
+      updatedArray[index].isAnd = e
       return updatedArray
     })
   }
@@ -97,7 +130,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
         categoryOption: { value: 'all', label: 'All' },
         functionOption: { value: 'includes', label: 'Includes' },
         searchOption: { value: '', label: 'Search' },
-        required: false,
+        isAnd: true,
       })
       return updatedArray
     })
@@ -115,38 +148,61 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     <div className="flex flex-col items-center">
       <div className="flex flex-col gap-1">
         {searchArray.map((element, index) => (
-          <div key={index} className="flex items-center gap-1">
-            <Select
-              className="w-48"
-              options={searchCategories}
-              value={searchArray[index].categoryOption}
-              onChange={(e) => handleCategoryChange(e, index)}
-            />
-            <Select
-              className="w-48"
-              options={
-                searchArray[index].categoryOption?.value === 'country' ||
-                searchArray[index].categoryOption?.value === 'artist' ||
-                searchArray[index].categoryOption?.value === 'song' ||
-                searchArray[index].categoryOption?.value === 'language' ||
-                searchArray[index].categoryOption?.value === 'link'
-                  ? stringSearchFunctions
-                  : numberSearchFunctions
-              }
-              value={searchArray[index].functionOption}
-              onChange={(e) => handleFunctionChange(e, index)}
-            />
-            <input
-              className="w-48 rounded-sm p-1"
-              value={searchArray[index].searchOption?.value}
-              onChange={(e) => handleSearchChange(e, index)}
-            />
-            <p>Required? </p>
-            <input
-              type="checkbox"
-              checked={searchArray[index].required}
-              onChange={(e) => handleRequiredChange(e, index)}
-            />
+          <div key={index}>
+            <div className="flex items-center gap-1">
+              <Select
+                className="w-48"
+                options={searchCategories}
+                value={searchArray[index].categoryOption}
+                onChange={(e) => handleCategoryChange(e, index)}
+              />
+              <Select
+                className="w-48"
+                options={
+                  searchArray[index].categoryOption?.value === 'country' ||
+                  searchArray[index].categoryOption?.value === 'artist' ||
+                  searchArray[index].categoryOption?.value === 'song' ||
+                  searchArray[index].categoryOption?.value === 'language' ||
+                  searchArray[index].categoryOption?.value === 'link'
+                    ? stringSearchFunctions
+                    : numberSearchFunctions
+                }
+                value={searchArray[index].functionOption}
+                onChange={(e) => handleFunctionChange(e, index)}
+              />
+              <input
+                className="w-48 rounded-sm p-1"
+                value={searchArray[index].searchOption?.value}
+                onChange={(e) => handleSearchChange(e, index)}
+              />
+            </div>
+            {index < searchArray.length - 1 && (
+              <div className="h-10 pb-1 pt-2">
+                <Switch
+                  onChange={(e) => handleIsAndChange(e, index)}
+                  checked={searchArray[index].isAnd}
+                  onColor={'#ff9bf5'}
+                  offColor={'#57d5d1'}
+                  checkedIcon={
+                    searchArray[index].isAnd ? (
+                      <p className=" pl-[0.2rem] pt-[0.1rem] text-center">
+                        And
+                      </p>
+                    ) : (
+                      <p></p>
+                    )
+                  }
+                  uncheckedIcon={
+                    !searchArray[index].isAnd ? (
+                      <p className="pr-[0.4rem] pt-[0.1rem] text-center">Or</p>
+                    ) : (
+                      <p></p>
+                    )
+                  }
+                  width={70}
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>

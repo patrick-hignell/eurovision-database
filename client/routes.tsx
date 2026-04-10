@@ -6,5 +6,6 @@ export default createRoutesFromElements(
   <Route path="/" element={<Layout />}>
     <Route index element={<App />} />
     <Route path="/table" element={<TablePage />} />
+    <Route path="/table/:search" element={<TablePage />} />
   </Route>,
 )

@@ -81,7 +81,7 @@ export interface SearchArrayElement {
   categoryOption: SingleValue<OptionType>
   functionOption: SingleValue<OptionType>
   searchOption: SingleValue<OptionType>
-  required: boolean
+  isAnd: boolean
 }
 
 export interface TableOptions {
