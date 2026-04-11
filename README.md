@@ -1,34 +1,26 @@
-# Boilerplate: Fullstack with Sass
+## [Eurovision Database](https://github.com/patrick-hignell/eurovision-database)
+This project originally began long before Dev Academy as a macro enabled Excel spreadsheet.
 
-## Setup
+I host an annual costume party for the Eurovision Song Contest and we discovered that some of our friends would struggle with the costume research process, particularly if there were not very familiar with Eurovision.
 
-### What's included
-<!-- 
-This repo includes:
+I therefore saw the need to create a costume database which would store information about past Eurovision entries with screenshots so that people could easily find inspiration for their costume.
 
-* a single, simple API endpoint (`/api/v1/fruits`)
-* frontend routing via react-router
-* an auth0 setup waiting to be configured
-* an example database module (`server/db/fruits.js`)
-* an API client module (`client/apis/fruits.js`)
-* configuration for Vitest and testing library
-* configuration for server-side debugging in VS Code
-* configuration for preprocessing css with tailwind support -->
+With the skills that I learned at Dev Academy I began working on turning the database in to an interactive website as my personal project.
 
-### Installation
+<details open>
+<summary><em>Screenshot</em></summary>
 
-#### **From the Github UI**
+![Eurovision Database screenshot](https://github.com/patrick-hignell/patrick-hignell/blob/main/public/images/EurovisionScreenshot.png?raw=true)
 
-See the instructions [here](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) to use Github's feature to create a new repo from a template.
+</details>
+<details>
+<summary><em>Next Steps</em></summary>
+  
+- Finish simple and advanced search function
+  
+- Add customisable data display on icons
 
-```
-git clone [your-project-ssh-address]
-cd [your-project-name]
-npm install # to install dependencies
-npm run dev # to start the dev server
-```
+- Add more screenshots
 
-You can find the server running on [http://localhost:3000](http://localhost:3000) and the client running on [http://localhost:5173](http://localhost:5173).
-
----
-[Provide feedback on this repo](https://docs.google.com/forms/d/e/1FAIpQLSfw4FGdWkLwMLlUaNQ8FtP2CTJdGDUv6Xoxrh19zIrJSkvT4Q/viewform?usp=pp_url&entry.1958421517=boilerplate-fullstack)
+- Fix youtube error messages
+</details>
