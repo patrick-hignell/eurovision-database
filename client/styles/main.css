@@ -13,8 +13,12 @@ td {
   @apply overflow-hidden overflow-ellipsis whitespace-nowrap;
 }
 
+.td {
+  @apply overflow-hidden overflow-ellipsis whitespace-nowrap;
+}
+
 input.filter {
-  @apply w-full bg-transparent text-center;
+  @apply w-full border border-white bg-transparent text-center;
 }
 
 .country {

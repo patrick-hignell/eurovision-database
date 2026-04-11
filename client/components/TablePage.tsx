@@ -6,11 +6,14 @@ import {
   EntryWithImages,
   FilterEntry,
   SearchArrayElement,
+  TableOptions,
 } from '../../models/entry'
 import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 import IconList from './IconList'
 import BasicSearch from './BasicSearch'
+import DialogModal from './DialogModal'
+import Options from './Options'
 
 export default function TablePage() {
   const {
@@ -58,7 +61,14 @@ export default function TablePage() {
   const [sortCategory, setSortCategory] = useState<Category>('country')
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
-  const [isSpreadsheet, setIsSpreadsheet] = useState(true)
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const defaultOptions: TableOptions = {
+    tableMode: 'Icons',
+    gallerySize: 5,
+    iconSize: 5,
+    searchMode: 'Basic',
+  }
+  const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
 
   useEffect(() => {
     if (data) {
@@ -143,49 +153,93 @@ export default function TablePage() {
         })
       }),
     )
-    const postSimpleSearch = postFilteredEntries.filter((entry) =>
-      searchArray?.every((searchElement) => {
-        if (!searchElement.functionOption) {
-          console.log('no function option')
-          return true
-        }
-        if (searchElement.categoryOption?.value === 'all') {
-          if (searchElement.functionOption?.value === 'excludes') {
-            return Object.keys(entry).every((entryCategory) =>
-              checkSearchOption(
-                entry[entryCategory as Category],
-                searchElement.functionOption?.value as string,
-                searchElement.searchOption?.value as string,
-              ),
-            )
-          } else {
-            return Object.keys(entry).some((entryCategory) =>
-              checkSearchOption(
-                entry[entryCategory as Category],
-                searchElement.functionOption?.value as string,
-                searchElement.searchOption?.value as string,
-              ),
-            )
-          }
-        } else if (searchElement.categoryOption) {
-          return checkSearchOption(
-            entry[searchElement.categoryOption.value as Category],
-            searchElement.functionOption?.value as string,
-            searchElement.searchOption?.value as string,
-          )
-        } else {
-          console.log('soemthing went wrong')
-          return true
-        }
-      }),
-    )
 
-    setEntries([...postSimpleSearch])
+    const splitSearchArray: SearchArrayElement[][] = [[]]
+
+    searchArray?.forEach((searchElement) => {
+      splitSearchArray[splitSearchArray.length - 1].push(searchElement)
+      if (searchElement.isAnd) {
+        splitSearchArray.push([])
+      }
+    })
+    console.log(splitSearchArray)
+
+    if (splitSearchArray[0].length > 0) {
+      const postSimpleSearch = postFilteredEntries.filter((entry) => {
+        return splitSearchArray?.every((splitElement) => {
+          return splitElement.some((searchElement) => {
+            if (!searchElement.functionOption) {
+              console.log('no function option')
+              return false
+            }
+            if (searchElement.categoryOption?.value === 'all') {
+              if (searchElement.functionOption?.value === 'excludes') {
+                return Object.keys(entry).every((entryCategory) =>
+                  checkSearchOption(
+                    entry[entryCategory as Category],
+                    searchElement.functionOption?.value as string,
+                    searchElement.searchOption?.value as string,
+                  ),
+                )
+              } else {
+                return Object.keys(entry).some((entryCategory) =>
+                  checkSearchOption(
+                    entry[entryCategory as Category],
+                    searchElement.functionOption?.value as string,
+                    searchElement.searchOption?.value as string,
+                  ),
+                )
+              }
+            } else if (searchElement.categoryOption) {
+              return checkSearchOption(
+                entry[searchElement.categoryOption.value as Category],
+                searchElement.functionOption?.value as string,
+                searchElement.searchOption?.value as string,
+              )
+            } else {
+              console.log('something went wrong')
+              return false
+            }
+          })
+        })
+      })
+      setEntries([...postSimpleSearch])
+      console.log('split search')
+    } else {
+      setEntries([...postFilteredEntries])
+      console.log('no search')
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preFilteredEntries, searchArray])
 
+  useEffect(() => {
+    if (searchArray !== undefined) {
+      updateUrl()
+    }
+  }, [searchArray])
+
+  function updateUrl() {
+    const params = new URLSearchParams()
+    searchArray?.forEach((element, index) => {
+      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
+      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
+      params.set(`s${index}_q`, element.searchOption?.value ?? '')
+      params.set(`s${index}_and`, String(element.isAnd))
+    })
+
+    params.set('s_count', String(searchArray?.length))
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    window.history.pushState({}, '', newUrl)
+  }
+
   function handleCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // use 'auto' for an instant jump
+    })
   }
 
   function handleFilterChange(category: Category, value: number | string) {
@@ -203,32 +257,74 @@ export default function TablePage() {
     // console.log({ ...filter, [category]: { ...filter[category], dir: newDir } })
   }
 
-  function handleDisplayType() {
-    setIsSpreadsheet(!isSpreadsheet)
-  }
-
   function handleSearchArrayChange(newSearchArray: SearchArrayElement[]) {
     setSearchArray(newSearchArray)
+  }
+
+  const handleOptionsOpen = () => setIsOptionsOpen(true)
+  const handleOptionsClose = () => setIsOptionsOpen(false)
+
+  function handleModeChange(newMode: string) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, tableMode: newMode }
+    })
+  }
+
+  function handleSearchModeChange(newMode: string) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, searchMode: newMode }
+    })
+  }
+
+  function handleGallerySizeChange(newSize: number) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, gallerySize: newSize }
+    })
+  }
+
+  function handleIconSizeChange(newSize: number) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, iconSize: newSize }
+    })
+  }
+
+  function handleResetOptions() {
+    setTableOptions(defaultOptions)
   }
 
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="flex w-5/6 min-w-0 flex-col gap-4 pb-8 pt-8">
+    <div className="flex w-5/6 min-w-[32rem] flex-col gap-4 pb-8 pt-8">
       <h1 className="text-3xl font-bold underline">
         Eurovision Costume Database
       </h1>
       <InfoPanel {...selectedEntry} />
-      <Gallery {...selectedEntry} />
-      <button onClick={handleDisplayType}>
-        <i
-          className={`text-6xl ${isSpreadsheet ? `bi bi-grid-3x3` : `bi bi-grid-3x3-gap-fill`}`}
-        ></i>
-      </button>
+      {selectedEntry.country != '' && (
+        <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
+      )}
+      <DialogModal isOpen={isOptionsOpen} onClose={handleOptionsClose}>
+        <Options
+          handleOptionsClose={handleOptionsClose}
+          updateModeChange={handleModeChange}
+          updateSearchModeChange={handleSearchModeChange}
+          updateGallerySizeChange={handleGallerySizeChange}
+          updateIconSizeChange={handleIconSizeChange}
+          handleResetOptions={handleResetOptions}
+        />
+      </DialogModal>
       <div className="flex flex-col justify-center">
-        <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
-        {entries && filter && isSpreadsheet && (
+        <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
+        {tableOptions.searchMode === 'Basic' && (
+          <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
+        )}
+        <div className="mb-2 flex w-full flex-row-reverse">
+          <button onClick={handleOptionsOpen}>
+            <i className="bi bi-gear-fill text-3xl"></i>
+          </button>
+        </div>
+        {entries && filter && tableOptions.tableMode === 'Spreadsheet' && (
           <Spreadsheet
             entries={entries}
             onCellClick={handleCellClick}
@@ -237,9 +333,10 @@ export default function TablePage() {
             onHeaderClick={handleHeaderClick}
             onCaretClick={handleCaretClick}
             filter={filter}
+            hasFilterRow={tableOptions.searchMode === 'Advanced'}
           />
         )}
-        {entries && !isSpreadsheet && (
+        {entries && tableOptions.tableMode === 'Icons' && (
           <IconList
             entries={entries}
             onCellClick={handleCellClick}
@@ -248,6 +345,8 @@ export default function TablePage() {
             onHeaderClick={handleHeaderClick}
             onCaretClick={handleCaretClick}
             filter={filter}
+            size={tableOptions.iconSize}
+            hasFilterRow={tableOptions.searchMode === 'Advanced'}
           />
         )}
       </div>

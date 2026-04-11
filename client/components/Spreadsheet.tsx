@@ -10,6 +10,7 @@ interface Props {
   onCaretClick: (category: Category) => void
   selectedId: number
   filter: FilterEntry
+  hasFilterRow: boolean
 }
 
 export default function Spreadsheet({
@@ -20,6 +21,7 @@ export default function Spreadsheet({
   onCaretClick,
   selectedId,
   filter,
+  hasFilterRow,
 }: Props) {
   // console.log(selectedId)
   return (
@@ -32,8 +34,10 @@ export default function Spreadsheet({
             onCaretClick={onCaretClick}
           />
         </thead>
-        <tbody className="block max-h-[54rem] w-fit overflow-y-scroll font-normal">
-          <FilterRow filter={filter} onFilterChange={onFilterChange} />
+        <tbody className="block max-h-[54rem] overflow-scroll font-normal">
+          {hasFilterRow && (
+            <FilterRow filter={filter} onFilterChange={onFilterChange} />
+          )}
           {entries.map((entry) => (
             <Row
               onCellClick={onCellClick}

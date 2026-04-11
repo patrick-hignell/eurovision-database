@@ -81,4 +81,12 @@ export interface SearchArrayElement {
   categoryOption: SingleValue<OptionType>
   functionOption: SingleValue<OptionType>
   searchOption: SingleValue<OptionType>
+  isAnd: boolean
+}
+
+export interface TableOptions {
+  tableMode: string
+  gallerySize: number
+  iconSize: number
+  searchMode: string
 }

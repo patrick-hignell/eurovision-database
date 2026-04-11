@@ -11,6 +11,8 @@ interface Props {
   onCaretClick: (category: Category) => void
   selectedId: number
   filter: FilterEntry
+  size: number
+  hasFilterRow: boolean
 }
 
 function IconList({
@@ -21,30 +23,37 @@ function IconList({
   onHeaderClick,
   selectedId,
   filter,
+  size,
+  hasFilterRow,
 }: Props) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center rounded-sm bg-white bg-opacity-10 outline outline-1 outline-white">
       <div>
-        <table>
+        <table className="w-full table-fixed">
           <thead>
-            <HeaderRow
-              filter={filter}
-              onHeaderClick={onHeaderClick}
-              onCaretClick={onCaretClick}
-            />
+            {hasFilterRow && (
+              <HeaderRow
+                filter={filter}
+                onHeaderClick={onHeaderClick}
+                onCaretClick={onCaretClick}
+              />
+            )}
           </thead>
           <tbody className="font-normal">
-            <FilterRow filter={filter} onFilterChange={onFilterChange} />
+            {hasFilterRow && (
+              <FilterRow filter={filter} onFilterChange={onFilterChange} />
+            )}
           </tbody>
         </table>
       </div>
-      <div className="flex h-[54rem] flex-wrap justify-center gap-4 overflow-scroll py-4">
+      <div className="flex h-[54rem] w-full flex-wrap content-start justify-center gap-4 overflow-x-hidden overflow-y-scroll py-4">
         {entries.map((entry) => (
           <Icon
             key={entry.id}
             entry={entry}
             onCellClick={onCellClick}
             selected={entry.id == selectedId}
+            size={size}
           />
         ))}
       </div>
