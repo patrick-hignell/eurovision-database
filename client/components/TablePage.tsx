@@ -162,7 +162,6 @@ export default function TablePage() {
         splitSearchArray.push([])
       }
     })
-    console.log(splitSearchArray)
 
     if (splitSearchArray[0].length > 0) {
       const postSimpleSearch = postFilteredEntries.filter((entry) => {
@@ -204,10 +203,8 @@ export default function TablePage() {
         })
       })
       setEntries([...postSimpleSearch])
-      console.log('split search')
     } else {
       setEntries([...postFilteredEntries])
-      console.log('no search')
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
