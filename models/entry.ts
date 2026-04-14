@@ -89,4 +89,5 @@ export interface TableOptions {
   gallerySize: number
   iconSize: number
   searchMode: string
+  iconCategories: string[]
 }

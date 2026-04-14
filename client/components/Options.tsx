@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { OptionType } from '../../models/entry'
-import Select, { SingleValue } from 'react-select'
+import Select, { MultiValue, SingleValue } from 'react-select'
 
 interface Props {
   handleOptionsClose: () => void
@@ -9,6 +9,7 @@ interface Props {
   updateGallerySizeChange: (newSize: number) => void
   updateIconSizeChange: (newSize: number) => void
   handleResetOptions: () => void
+  updateIconCategoriesChange: (newCategories: string[]) => void
 }
 
 function Options({
@@ -18,10 +19,17 @@ function Options({
   updateGallerySizeChange,
   updateIconSizeChange,
   handleResetOptions,
+  updateIconCategoriesChange,
 }: Props) {
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
   const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
   const [iconSize, setIconSize] = useState({ value: '5', label: '5' })
+  const [iconCategories, setIconCategories] = useState<MultiValue<OptionType>>([
+    { value: 'country', label: 'Country' },
+    { value: 'year', label: 'Year' },
+    { value: 'artist', label: 'Artist' },
+    { value: 'song', label: 'Song' },
+  ])
   const [searchMode, setSearchMode] = useState({
     value: 'Basic',
     label: 'Basic',
@@ -50,6 +58,18 @@ function Options({
     { value: 'Advanced', label: 'Advanced' },
   ]
 
+  const categoryList: OptionType[] = [
+    { value: 'country', label: 'Country' },
+    { value: 'year', label: 'Year' },
+    { value: 'artist', label: 'Artist' },
+    { value: 'song', label: 'Song' },
+    { value: 'language', label: 'Language' },
+    { value: 'position', label: 'Position' },
+    { value: 'points', label: 'Points' },
+    { value: 'link', label: 'Link' },
+    { value: 'costume', label: 'Costume' },
+  ]
+
   function handleModeChange(e: SingleValue<OptionType>) {
     e && setMode(e)
     e && updateModeChange(e.value)
@@ -70,6 +90,11 @@ function Options({
     e && updateIconSizeChange(Number(e.value))
   }
 
+  function handleIconCategoriesChange(e: MultiValue<OptionType>) {
+    e && setIconCategories(e)
+    e && updateIconCategoriesChange(e.map((category) => category.value))
+  }
+
   function handleReset() {
     handleResetOptions()
     setMode({ value: 'Icons', label: 'Icons' })
@@ -79,6 +104,12 @@ function Options({
       value: 'Basic',
       label: 'Basic',
     })
+    setIconCategories([
+      { value: 'country', label: 'Country' },
+      { value: 'year', label: 'Year' },
+      { value: 'artist', label: 'Artist' },
+      { value: 'song', label: 'Song' },
+    ])
   }
 
   return (
@@ -94,15 +125,6 @@ function Options({
         </div>
         <div className="px-12">
           <h2 className="mb-1 text-2xl">Options</h2>
-          <div className="flex items-center justify-between p-4">
-            <p className="mr-6">Display Mode:</p>
-            <Select
-              className="w-48"
-              options={modeList}
-              value={mode}
-              onChange={(e) => handleModeChange(e)}
-            />
-          </div>
 
           <div className="flex items-center justify-between p-4">
             <p className="mr-6">Gallery Size:</p>
@@ -111,6 +133,26 @@ function Options({
               options={sizeList}
               value={gallerySize}
               onChange={(e) => handleGallerySizeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Search Mode:</p>
+            <Select
+              className="w-48"
+              options={searchModeList}
+              value={searchMode}
+              onChange={(e) => handleSearchModeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Display Mode:</p>
+            <Select
+              className="w-48"
+              options={modeList}
+              value={mode}
+              onChange={(e) => handleModeChange(e)}
             />
           </div>
 
@@ -124,15 +166,22 @@ function Options({
             />
           </div>
 
-          <div className="flex items-center justify-between p-4">
-            <p className="mr-6">Search Mode:</p>
+          <div className="g-2 flex-col items-center justify-between p-4">
+            <p className="mb-4 text-left">Icon Categories:</p>
             <Select
-              className="w-48"
-              options={searchModeList}
-              value={searchMode}
-              onChange={(e) => handleSearchModeChange(e)}
+              isMulti
+              classNames={{
+                control: () => 'min-h-[30px] w-96 text-sm', // Force smaller height
+                valueContainer: () => 'p-0 px-2', // Remove vertical padding
+                dropdownIndicator: () => 'p-0 pr-2', // Slim down the arrow container
+                input: () => 'm-0 p-0', // Prevent input from pushing height
+              }}
+              options={categoryList}
+              value={iconCategories}
+              onChange={(e) => handleIconCategoriesChange(e)}
             />
           </div>
+
           <div className="flex justify-evenly">
             <button
               className="mt-3 rounded bg-white bg-opacity-25 px-4 py-1 outline outline-white"
