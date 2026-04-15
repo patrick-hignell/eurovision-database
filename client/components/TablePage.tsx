@@ -69,7 +69,9 @@ export default function TablePage() {
   ]
 
   const [onload, setOnLoad] = useState(true)
-  const [favourites, setFavourites] = useState<number[]>([])
+  const [favourites, setFavourites] = useState<number[]>(() =>
+    extractFavouritesFromUrl(),
+  )
   const [entries, setEntries] = useState<EntryWithImages[]>([])
   const [preFilteredEntries, setPreFilteredEntries] = useState<
     EntryWithImages[]
@@ -247,7 +249,17 @@ export default function TablePage() {
     if (searchArray !== undefined) {
       updateUrl()
     }
-  }, [searchArray])
+  }, [searchArray, favourites])
+
+  function extractFavouritesFromUrl(): number[] {
+    const params = new URLSearchParams(window.location.search)
+    const raw = params.get('favs')
+    if (!raw) return []
+    return raw
+      .split(',')
+      .map(Number)
+      .filter((n) => !isNaN(n))
+  }
 
   function updateUrl() {
     const params = new URLSearchParams()
@@ -259,6 +271,10 @@ export default function TablePage() {
     })
 
     params.set('s_count', String(searchArray?.length))
+
+    if (favourites.length > 0) {
+      params.set('favs', favourites.join(','))
+    }
 
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.pushState({}, '', newUrl)
