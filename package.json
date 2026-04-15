@@ -39,6 +39,7 @@
     "knex": "^2.5.1",
     "pg": "^8.20.0",
     "react-bootstrap": "^2.10.10",
+    "react-responsive": "^10.0.1",
     "react-select": "^5.10.2",
     "react-switch": "^7.1.0",
     "sqlite3": "^5.1.6",

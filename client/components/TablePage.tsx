@@ -17,6 +17,8 @@ import DialogModal from './DialogModal'
 import Options from './Options'
 import Select from 'react-select'
 import { SingleValue } from 'react-select'
+import MediaQuery from 'react-responsive'
+import InfoPanelSmall from './InfoPanelSmall'
 
 export default function TablePage() {
   const {
@@ -395,7 +397,12 @@ export default function TablePage() {
       <h1 className="text-3xl font-bold underline">
         Eurovision Costume Database
       </h1>
-      <InfoPanel {...selectedEntry} />
+      <MediaQuery minWidth={1224}>
+        <InfoPanel {...selectedEntry} />
+      </MediaQuery>
+      <MediaQuery maxWidth={1224}>
+        <InfoPanelSmall {...selectedEntry} />
+      </MediaQuery>
       {selectedEntry.country != '' && (
         <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       )}

@@ -1,4 +1,3 @@
-import { Link } from 'react-router'
 import { Entry } from '../../models/entry'
 
 export default function InfoPanelSmall(entry: Entry) {
@@ -9,35 +8,35 @@ export default function InfoPanelSmall(entry: Entry) {
         <table className="w-full table-fixed">
           <tbody>
             <tr>
-              <td>
+              <td colSpan={3}>
                 <span className="font-extrabold underline">Country</span>
                 {`: ${entry.country}`}
               </td>
-              <td>
+              <td colSpan={3}>
                 <span className="font-extrabold underline">Year</span>
                 {`: ${entry.year}`}
               </td>
-              <tr>
-                <td>
-                  <span className="font-extrabold underline">Artist</span>
-                  {`: ${entry.artist}`}
-                </td>
-                <td>
-                  <span className="font-extrabold underline">Song</span>
-                  {`: ${entry.song}`}
-                </td>
-              </tr>
             </tr>
             <tr>
-              <td>
+              <td colSpan={3}>
+                <span className="font-extrabold underline">Artist</span>
+                {`: ${entry.artist}`}
+              </td>
+              <td colSpan={3}>
+                <span className="font-extrabold underline">Song</span>
+                {`: ${entry.song}`}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={2}>
                 <span className="font-extrabold underline">Position</span>
                 {`: ${entry.position}`}
               </td>
-              <td>
+              <td colSpan={2}>
                 <span className="font-extrabold underline">Points</span>
                 {`: ${entry.points}`}
               </td>
-              <td>
+              <td colSpan={2}>
                 <span className="font-extrabold underline">Costume</span>
                 {`: ${entry.costume}`}
               </td>
