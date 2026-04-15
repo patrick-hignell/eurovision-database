@@ -5,6 +5,7 @@ import {
   Category,
   EntryWithImages,
   FilterEntry,
+  OptionType,
   SearchArrayElement,
   TableOptions,
 } from '../../models/entry'
@@ -14,6 +15,8 @@ import IconList from './IconList'
 import BasicSearch from './BasicSearch'
 import DialogModal from './DialogModal'
 import Options from './Options'
+import Select from 'react-select'
+import { SingleValue } from 'react-select'
 
 export default function TablePage() {
   const {
@@ -51,6 +54,18 @@ export default function TablePage() {
     costume: { isExact: false, value: '', dir: 'asc' },
   }
 
+  const sortCategories: OptionType[] = [
+    { value: 'country', label: 'Country' },
+    { value: 'year', label: 'Year' },
+    { value: 'artist', label: 'Artist' },
+    { value: 'song', label: 'Song' },
+    { value: 'language', label: 'Language' },
+    { value: 'position', label: 'Position' },
+    { value: 'points', label: 'Points' },
+    { value: 'link', label: 'Link' },
+    { value: 'costume', label: 'Costume' },
+  ]
+
   const [onload, setOnLoad] = useState(true)
   const [entries, setEntries] = useState<EntryWithImages[]>([])
   const [preFilteredEntries, setPreFilteredEntries] = useState<
@@ -59,6 +74,10 @@ export default function TablePage() {
   const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
   const [sortCategory, setSortCategory] = useState<Category>('country')
+  const [sortOption, setSortOption] = useState<OptionType>({
+    value: 'country',
+    label: 'Country',
+  })
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
@@ -67,6 +86,7 @@ export default function TablePage() {
     gallerySize: 5,
     iconSize: 5,
     searchMode: 'Basic',
+    iconCategories: ['country', 'year', 'artist', 'song'],
   }
   const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
 
@@ -289,6 +309,17 @@ export default function TablePage() {
     setTableOptions(defaultOptions)
   }
 
+  function handleIconCategoriesChange(newCategories: string[]) {
+    setTableOptions((prevOptions) => {
+      return { ...prevOptions, iconCategories: newCategories }
+    })
+  }
+
+  function handleSortOptionChange(e: SingleValue<OptionType>) {
+    e && setSortOption(e)
+    e && setSortCategory(e.value as Category)
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -309,6 +340,7 @@ export default function TablePage() {
           updateGallerySizeChange={handleGallerySizeChange}
           updateIconSizeChange={handleIconSizeChange}
           handleResetOptions={handleResetOptions}
+          updateIconCategoriesChange={handleIconCategoriesChange}
         />
       </DialogModal>
       <div className="flex flex-col justify-center">
@@ -316,7 +348,20 @@ export default function TablePage() {
         {tableOptions.searchMode === 'Basic' && (
           <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
         )}
-        <div className="mb-2 flex w-full flex-row-reverse">
+        <div className="mb-1 flex w-full justify-between">
+          <div className="flex gap-1">
+            <button onClick={() => handleCaretClick(sortCategory)}>
+              <i
+                className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} text-4xl`}
+              ></i>
+            </button>
+            <Select
+              className="w-40 lg:w-48"
+              options={sortCategories}
+              value={sortOption}
+              onChange={(e) => handleSortOptionChange(e)}
+            />
+          </div>
           <button onClick={handleOptionsOpen}>
             <i className="bi bi-gear-fill text-3xl"></i>
           </button>
@@ -344,6 +389,7 @@ export default function TablePage() {
             filter={filter}
             size={tableOptions.iconSize}
             hasFilterRow={tableOptions.searchMode === 'Advanced'}
+            categories={tableOptions.iconCategories}
           />
         )}
       </div>

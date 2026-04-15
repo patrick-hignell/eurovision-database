@@ -13,6 +13,7 @@ interface Props {
   filter: FilterEntry
   size: number
   hasFilterRow: boolean
+  categories: string[]
 }
 
 function IconList({
@@ -25,6 +26,7 @@ function IconList({
   filter,
   size,
   hasFilterRow,
+  categories,
 }: Props) {
   return (
     <div className="flex flex-col items-center rounded-sm bg-white bg-opacity-10 outline outline-1 outline-white">
@@ -54,6 +56,7 @@ function IconList({
             onCellClick={onCellClick}
             selected={entry.id == selectedId}
             size={size}
+            categories={categories}
           />
         ))}
       </div>

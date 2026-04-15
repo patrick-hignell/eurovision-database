@@ -150,7 +150,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
       <div className="flex flex-col gap-1">
         {searchArray.map((element, index) => (
           <div key={index}>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Select
                 className="w-40 lg:w-48"
                 options={searchCategories}
@@ -172,7 +172,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
                 onChange={(e) => handleFunctionChange(e, index)}
               />
               <input
-                className="w-40 rounded-sm p-1 lg:w-48"
+                className="h-9 w-40 rounded-[0.2rem]  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-48"
                 value={searchArray[index].searchOption?.value}
                 onChange={(e) => handleSearchChange(e, index)}
               />
