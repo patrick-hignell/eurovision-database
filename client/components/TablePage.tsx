@@ -391,7 +391,7 @@ export default function TablePage() {
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="flex w-5/6 min-w-[32rem] flex-col gap-4 pb-8 pt-8">
+    <div className="flex min-w-[32rem] flex-col gap-4 pb-8 pt-8 lg:w-5/6">
       <h1 className="text-3xl font-bold underline">
         Eurovision Costume Database
       </h1>
