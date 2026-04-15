@@ -40,11 +40,11 @@ export default function Row({ entry, onCellClick, selected }: Props) {
       <td className="body points" onClick={() => handleCellClick(entry)}>
         {entry.points}
       </td>
-      <td className="body link" onClick={() => handleCellClick(entry)}>
-        {entry.link}
-      </td>
       <td className="body costume" onClick={() => handleCellClick(entry)}>
         {entry.costume}
+      </td>
+      <td className="body favourite" onClick={() => handleCellClick(entry)}>
+        {entry.favourite && <i className="bi bi-star-fill text-yellow-600"></i>}
       </td>
     </tr>
   )

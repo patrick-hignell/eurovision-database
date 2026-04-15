@@ -19,6 +19,7 @@ export interface Entry extends EntryData {
 
 export interface EntryWithImages extends Entry {
   images: string[]
+  favourite?: boolean
 }
 
 export interface Image {
@@ -36,6 +37,7 @@ export interface FilterEntry {
   points: { isExact: boolean; value: number | string; dir: string }
   link: { isExact: boolean; value: string; dir: string }
   costume: { isExact: boolean; value: number | string; dir: string }
+  favourite: { isExact: boolean; value: number | string; dir: string }
 }
 
 export type Category =
@@ -48,6 +50,7 @@ export type Category =
   | 'points'
   | 'link'
   | 'costume'
+  | 'favourite'
 
 export type SearchStringOptions = 'includes' | 'exact' | 'excludes'
 
@@ -91,3 +94,8 @@ export interface TableOptions {
   searchMode: string
   iconCategories: string[]
 }
+
+// export interface IndexedFavourite {
+//   id: number
+//   favourite: boolean
+// }

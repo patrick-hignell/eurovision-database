@@ -41,6 +41,7 @@ export default function TablePage() {
     link: '',
     costume: '',
     images: [],
+    favourite: false,
   }
   const initialFilter: FilterEntry = {
     country: { isExact: false, value: '', dir: 'asc' },
@@ -52,6 +53,7 @@ export default function TablePage() {
     points: { isExact: false, value: '', dir: 'asc' },
     link: { isExact: false, value: '', dir: 'asc' },
     costume: { isExact: false, value: '', dir: 'asc' },
+    favourite: { isExact: false, value: '', dir: 'asc' },
   }
 
   const sortCategories: OptionType[] = [
@@ -62,11 +64,14 @@ export default function TablePage() {
     { value: 'language', label: 'Language' },
     { value: 'position', label: 'Position' },
     { value: 'points', label: 'Points' },
-    { value: 'link', label: 'Link' },
     { value: 'costume', label: 'Costume' },
+    { value: 'favourite', label: 'Favourite' },
   ]
 
   const [onload, setOnLoad] = useState(true)
+  const [favourites, setFavourites] = useState<number[]>(() =>
+    extractFavouritesFromUrl(),
+  )
   const [entries, setEntries] = useState<EntryWithImages[]>([])
   const [preFilteredEntries, setPreFilteredEntries] = useState<
     EntryWithImages[]
@@ -86,7 +91,7 @@ export default function TablePage() {
     gallerySize: 5,
     iconSize: 5,
     searchMode: 'Basic',
-    iconCategories: ['country', 'year', 'artist', 'song'],
+    iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
   }
   const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
 
@@ -120,7 +125,16 @@ export default function TablePage() {
       'link',
       'costume',
     ]
-    const postFilteredEntries = preFilteredEntries.filter((entry) =>
+    const searchWithFavourites = preFilteredEntries.map((entry) => {
+      if (favourites.includes(entry.id)) {
+        entry.favourite = true
+      } else {
+        entry.favourite = false
+      }
+      return entry
+    })
+
+    const postFilteredEntries = searchWithFavourites.filter((entry) =>
       categoryOptions.every((option) => {
         const filterValueArray = String(filter[option as Category].value).split(
           ';',
@@ -182,9 +196,9 @@ export default function TablePage() {
         splitSearchArray.push([])
       }
     })
-
+    let postSimpleSearch = []
     if (splitSearchArray[0].length > 0) {
-      const postSimpleSearch = postFilteredEntries.filter((entry) => {
+      postSimpleSearch = postFilteredEntries.filter((entry) => {
         return splitSearchArray?.every((splitElement) => {
           return splitElement.some((searchElement) => {
             if (!searchElement.functionOption) {
@@ -222,19 +236,34 @@ export default function TablePage() {
           })
         })
       })
-      setEntries([...postSimpleSearch])
     } else {
-      setEntries([...postFilteredEntries])
+      postSimpleSearch = [...postFilteredEntries]
     }
 
+    setEntries(postSimpleSearch)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preFilteredEntries, searchArray])
+  }, [preFilteredEntries, searchArray, favourites])
 
   useEffect(() => {
     if (searchArray !== undefined) {
       updateUrl()
+      saveToLocalStorage(searchArray, favourites)
     }
-  }, [searchArray])
+  }, [searchArray, favourites])
+
+  function extractFavouritesFromUrl(): number[] {
+    let params = new URLSearchParams(window.location.search)
+    if (!params.get('favs') && !params.get('s_count')) {
+      params = loadFromLocalStorage() ?? params
+    }
+    const raw = params.get('favs')
+    if (!raw) return []
+    return raw
+      .split(',')
+      .map(Number)
+      .filter((n) => !isNaN(n))
+  }
 
   function updateUrl() {
     const params = new URLSearchParams()
@@ -247,8 +276,36 @@ export default function TablePage() {
 
     params.set('s_count', String(searchArray?.length))
 
+    if (favourites.length > 0) {
+      params.set('favs', favourites.join(','))
+    }
+
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.pushState({}, '', newUrl)
+  }
+
+  function saveToLocalStorage(
+    searchArray: SearchArrayElement[] | undefined,
+    favourites: number[],
+  ) {
+    const params = new URLSearchParams()
+    searchArray?.forEach((element, index) => {
+      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
+      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
+      params.set(`s${index}_q`, element.searchOption?.value ?? '')
+      params.set(`s${index}_and`, String(element.isAnd))
+    })
+    params.set('s_count', String(searchArray?.length ?? 0))
+    if (favourites.length > 0) {
+      params.set('favs', favourites.join(','))
+    }
+    localStorage.setItem('eurovision_state', params.toString())
+  }
+
+  function loadFromLocalStorage(): URLSearchParams | null {
+    const raw = localStorage.getItem('eurovision_state')
+    if (!raw) return null
+    return new URLSearchParams(raw)
   }
 
   function handleCellClick(entry: EntryWithImages) {
@@ -320,11 +377,21 @@ export default function TablePage() {
     e && setSortCategory(e.value as Category)
   }
 
+  function handleStarClick() {
+    if (selectedEntry.id != -1) {
+      setFavourites((prevFavourites) => {
+        return favourites.includes(selectedEntry.id)
+          ? favourites.filter((id) => id !== selectedEntry.id)
+          : [...prevFavourites, selectedEntry.id]
+      })
+    }
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="flex w-5/6 min-w-[32rem] flex-col gap-4 pb-8 pt-8">
+    <div className="flex min-w-[32rem] flex-col gap-4 pb-8 pt-8 lg:w-5/6">
       <h1 className="text-3xl font-bold underline">
         Eurovision Costume Database
       </h1>
@@ -346,10 +413,13 @@ export default function TablePage() {
       <div className="flex flex-col justify-center">
         <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
         {tableOptions.searchMode === 'Basic' && (
-          <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
+          <BasicSearch
+            onSearchArrayChange={handleSearchArrayChange}
+            loadFromLocalStorage={loadFromLocalStorage}
+          />
         )}
-        <div className="mb-1 flex w-full justify-between">
-          <div className="flex gap-1">
+        <div className="mb-1 flex w-full justify-start">
+          <div className="flex w-1/3 gap-1">
             <button onClick={() => handleCaretClick(sortCategory)}>
               <i
                 className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} text-4xl`}
@@ -362,9 +432,18 @@ export default function TablePage() {
               onChange={(e) => handleSortOptionChange(e)}
             />
           </div>
-          <button onClick={handleOptionsOpen}>
-            <i className="bi bi-gear-fill text-3xl"></i>
-          </button>
+          <div className="flex w-1/3 justify-center">
+            <button onClick={handleStarClick}>
+              <i
+                className={`bi bi-${selectedEntry.favourite ? 'star-fill' : 'star'} text-3xl`}
+              ></i>
+            </button>
+          </div>
+          <div className="flex w-1/3 justify-end">
+            <button onClick={handleOptionsOpen}>
+              <i className="bi bi-gear-fill text-3xl"></i>
+            </button>
+          </div>
         </div>
         {entries && filter && tableOptions.tableMode === 'Spreadsheet' && (
           <Spreadsheet
@@ -402,39 +481,48 @@ function sortIt(
   category: Category,
   dir: string,
 ) {
-  // const numbers = tempEntries.filter(
-  //   (entry) => typeof entry[category] === 'number',
-  // )
-  // const strings = tempEntries.filter(
-  //   (entry) => typeof entry[category] === 'string',
-  // )
+  if (category === 'favourite') {
+    const sortedBooleans =
+      dir === 'asc'
+        ? [...tempEntries].sort(
+            (a, b) => Number(b[category]) - Number(a[category]),
+          )
+        : [...tempEntries].sort(
+            (a, b) => Number(a[category]) - Number(b[category]),
+          )
+    return sortedBooleans
+  } else {
+    const numbers = tempEntries.filter(
+      (entry) => !isNaN(Number(entry[category])),
+    )
+    const strings = tempEntries.filter((entry) =>
+      isNaN(Number(entry[category])),
+    )
 
-  const numbers = tempEntries.filter((entry) => !isNaN(Number(entry[category])))
-  const strings = tempEntries.filter((entry) => isNaN(Number(entry[category])))
+    // console.log('number length: ' + numbers.length)
+    // console.log('string length: ' + strings.length)
 
-  // console.log('number length: ' + numbers.length)
-  // console.log('string length: ' + strings.length)
+    numbers.sort((a, b) =>
+      dir === 'asc'
+        ? (a[category] as number) - (b[category] as number)
+        : (b[category] as number) - (a[category] as number),
+    ) // Sort numbers numerically
+    strings.sort((a, b) =>
+      dir === 'asc'
+        ? (a[category] as string).localeCompare(b[category] as string)
+        : (b[category] as string).localeCompare(a[category] as string),
+    ) // Sort strings alphabetically
 
-  numbers.sort((a, b) =>
-    dir === 'asc'
-      ? (a[category] as number) - (b[category] as number)
-      : (b[category] as number) - (a[category] as number),
-  ) // Sort numbers numerically
-  strings.sort((a, b) =>
-    dir === 'asc'
-      ? (a[category] as string).localeCompare(b[category] as string)
-      : (b[category] as string).localeCompare(a[category] as string),
-  ) // Sort strings alphabetically
+    const resortedEntries =
+      dir === 'asc' ? [...strings, ...numbers] : [...numbers, ...strings]
+    //console.log(resortedEntries)
 
-  const resortedEntries =
-    dir === 'asc' ? [...strings, ...numbers] : [...numbers, ...strings]
-  //console.log(resortedEntries)
-
-  return resortedEntries
+    return resortedEntries
+  }
 }
 
 function checkSearchOption(
-  entryValue: string | number,
+  entryValue: string | number | boolean | undefined,
   operation: string,
   searchValue: string | number,
 ) {
@@ -459,6 +547,10 @@ function checkSearchOption(
       return Number(entryValue) < Number(searchValue)
     case '<=':
       return Number(entryValue) <= Number(searchValue)
+    case 'selected':
+      return entryValue === true
+    case 'not selected':
+      return entryValue === false
     default:
       return false
   }

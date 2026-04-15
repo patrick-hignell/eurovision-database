@@ -21,15 +21,20 @@ function Options({
   handleResetOptions,
   updateIconCategoriesChange,
 }: Props) {
+  const enableAdvancedSearch = false
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
   const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
   const [iconSize, setIconSize] = useState({ value: '5', label: '5' })
-  const [iconCategories, setIconCategories] = useState<MultiValue<OptionType>>([
+
+  const defaultCategories: MultiValue<OptionType> = [
     { value: 'country', label: 'Country' },
     { value: 'year', label: 'Year' },
     { value: 'artist', label: 'Artist' },
     { value: 'song', label: 'Song' },
-  ])
+    { value: 'favourite', label: 'Favourite' },
+  ]
+  const [iconCategories, setIconCategories] =
+    useState<MultiValue<OptionType>>(defaultCategories)
   const [searchMode, setSearchMode] = useState({
     value: 'Basic',
     label: 'Basic',
@@ -68,6 +73,7 @@ function Options({
     { value: 'points', label: 'Points' },
     { value: 'link', label: 'Link' },
     { value: 'costume', label: 'Costume' },
+    { value: 'favourite', label: 'Favourite' },
   ]
 
   function handleModeChange(e: SingleValue<OptionType>) {
@@ -104,12 +110,7 @@ function Options({
       value: 'Basic',
       label: 'Basic',
     })
-    setIconCategories([
-      { value: 'country', label: 'Country' },
-      { value: 'year', label: 'Year' },
-      { value: 'artist', label: 'Artist' },
-      { value: 'song', label: 'Song' },
-    ])
+    setIconCategories(defaultCategories)
   }
 
   return (
@@ -126,25 +127,17 @@ function Options({
         <div className="px-12">
           <h2 className="mb-1 text-2xl">Options</h2>
 
-          <div className="flex items-center justify-between p-4">
-            <p className="mr-6">Gallery Size:</p>
-            <Select
-              className="w-48"
-              options={sizeList}
-              value={gallerySize}
-              onChange={(e) => handleGallerySizeChange(e)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4">
-            <p className="mr-6">Search Mode:</p>
-            <Select
-              className="w-48"
-              options={searchModeList}
-              value={searchMode}
-              onChange={(e) => handleSearchModeChange(e)}
-            />
-          </div>
+          {enableAdvancedSearch && (
+            <div className="flex items-center justify-between p-4">
+              <p className="mr-6">Search Mode:</p>
+              <Select
+                className="w-48"
+                options={searchModeList}
+                value={searchMode}
+                onChange={(e) => handleSearchModeChange(e)}
+              />
+            </div>
+          )}
 
           <div className="flex items-center justify-between p-4">
             <p className="mr-6">Display Mode:</p>
@@ -153,6 +146,16 @@ function Options({
               options={modeList}
               value={mode}
               onChange={(e) => handleModeChange(e)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-4">
+            <p className="mr-6">Gallery Size:</p>
+            <Select
+              className="w-48"
+              options={sizeList}
+              value={gallerySize}
+              onChange={(e) => handleGallerySizeChange(e)}
             />
           </div>
 

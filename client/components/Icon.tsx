@@ -22,7 +22,7 @@ function IconList({
   return (
     <button
       onClick={() => handleCellClick(entry)}
-      className={`flex border-collapse flex-col overflow-hidden rounded-lg border border-white border-opacity-50 bg-white bg-opacity-25 ${selected ? `bg-white-200 bg-opacity-60` : ``}`}
+      className={`flex border-collapse flex-col overflow-hidden rounded-lg border border-white border-opacity-50 ${'bg-white'} bg-opacity-25 ${selected ? ` bg-opacity-60` : ``}`}
       // style={{ width: `${3 * size}rem`, height: `${2.6 * size}rem` }}
       style={{ width: `${3 * size}rem` }}
     >
@@ -41,6 +41,14 @@ function IconList({
         )}
       </div>
       <div className="flex justify-evenly">
+        {categories.includes('favourite') && entry.favourite && (
+          <p
+            className="overflow-hidden overflow-ellipsis whitespace-nowrap"
+            style={{ fontSize: `${0.2 * size}rem` }}
+          >
+            <i className="bi bi-star-fill text-yellow-600"></i>
+          </p>
+        )}
         {categories.includes('country') && (
           <p
             className="overflow-hidden overflow-ellipsis whitespace-nowrap"
