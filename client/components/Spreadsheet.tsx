@@ -1,6 +1,6 @@
 import { Category, EntryWithImages, FilterEntry } from '../../models/entry'
+import BasicHeaderRow from './BasicHeaderRow'
 import FilterRow from './FilterRow'
-import HeaderRow from './HeaderRow'
 import Row from './Row'
 interface Props {
   entries: EntryWithImages[]
@@ -17,8 +17,6 @@ export default function Spreadsheet({
   entries,
   onCellClick,
   onFilterChange,
-  onHeaderClick,
-  onCaretClick,
   selectedId,
   filter,
   hasFilterRow,
@@ -28,11 +26,12 @@ export default function Spreadsheet({
     <div className="">
       <table className="w-full table-fixed">
         <thead className="block">
-          <HeaderRow
+          {/* <HeaderRow
             filter={filter}
             onHeaderClick={onHeaderClick}
             onCaretClick={onCaretClick}
-          />
+          /> */}
+          <BasicHeaderRow />
         </thead>
         <tbody className="block max-h-[54rem] overflow-scroll font-normal">
           {hasFilterRow && (
