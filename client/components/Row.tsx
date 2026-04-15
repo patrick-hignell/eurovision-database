@@ -44,7 +44,7 @@ export default function Row({ entry, onCellClick, selected }: Props) {
         {entry.costume}
       </td>
       <td className="body favourite" onClick={() => handleCellClick(entry)}>
-        {entry.favourite && <i className="bi bi-star-fill"></i>}
+        {entry.favourite && <i className="bi bi-star-fill text-yellow-600"></i>}
       </td>
     </tr>
   )

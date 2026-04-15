@@ -5,9 +5,10 @@ import Switch from 'react-switch'
 
 interface Props {
   onSearchArrayChange: (searchArray: SearchArrayElement[]) => void
+  loadFromLocalStorage: () => void
 }
 
-function BasicSearch({ onSearchArrayChange }: Props) {
+function BasicSearch({ onSearchArrayChange, loadFromLocalStorage }: Props) {
   const [searchArray, setSearchArray] = useState<SearchArrayElement[]>(
     () =>
       extractSearchArrayFromUrl() ?? [
@@ -64,7 +65,10 @@ function BasicSearch({ onSearchArrayChange }: Props) {
   }, [searchArray])
 
   function extractSearchArrayFromUrl(): SearchArrayElement[] | null {
-    const params = new URLSearchParams(window.location.search)
+    let params = new URLSearchParams(window.location.search)
+    if (!params.get('s_count')) {
+      params = loadFromLocalStorage() ?? params
+    }
     const count = parseInt(params.get('s_count') ?? '0', 10)
 
     if (!count) return null

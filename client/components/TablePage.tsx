@@ -248,11 +248,15 @@ export default function TablePage() {
   useEffect(() => {
     if (searchArray !== undefined) {
       updateUrl()
+      saveToLocalStorage(searchArray, favourites)
     }
   }, [searchArray, favourites])
 
   function extractFavouritesFromUrl(): number[] {
-    const params = new URLSearchParams(window.location.search)
+    let params = new URLSearchParams(window.location.search)
+    if (!params.get('favs') && !params.get('s_count')) {
+      params = loadFromLocalStorage() ?? params
+    }
     const raw = params.get('favs')
     if (!raw) return []
     return raw
@@ -278,6 +282,30 @@ export default function TablePage() {
 
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.pushState({}, '', newUrl)
+  }
+
+  function saveToLocalStorage(
+    searchArray: SearchArrayElement[] | undefined,
+    favourites: number[],
+  ) {
+    const params = new URLSearchParams()
+    searchArray?.forEach((element, index) => {
+      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
+      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
+      params.set(`s${index}_q`, element.searchOption?.value ?? '')
+      params.set(`s${index}_and`, String(element.isAnd))
+    })
+    params.set('s_count', String(searchArray?.length ?? 0))
+    if (favourites.length > 0) {
+      params.set('favs', favourites.join(','))
+    }
+    localStorage.setItem('eurovision_state', params.toString())
+  }
+
+  function loadFromLocalStorage(): URLSearchParams | null {
+    const raw = localStorage.getItem('eurovision_state')
+    if (!raw) return null
+    return new URLSearchParams(raw)
   }
 
   function handleCellClick(entry: EntryWithImages) {
@@ -385,7 +413,10 @@ export default function TablePage() {
       <div className="flex flex-col justify-center">
         <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
         {tableOptions.searchMode === 'Basic' && (
-          <BasicSearch onSearchArrayChange={handleSearchArrayChange} />
+          <BasicSearch
+            onSearchArrayChange={handleSearchArrayChange}
+            loadFromLocalStorage={loadFromLocalStorage}
+          />
         )}
         <div className="mb-1 flex w-full justify-start">
           <div className="flex w-1/3 gap-1">

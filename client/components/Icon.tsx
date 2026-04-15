@@ -41,12 +41,12 @@ function IconList({
         )}
       </div>
       <div className="flex justify-evenly">
-        {categories.includes('favourite') && (
+        {categories.includes('favourite') && entry.favourite && (
           <p
             className="overflow-hidden overflow-ellipsis whitespace-nowrap"
             style={{ fontSize: `${0.2 * size}rem` }}
           >
-            {entry.favourite && <i className="bi bi-star-fill"></i>}
+            <i className="bi bi-star-fill text-yellow-600"></i>
           </p>
         )}
         {categories.includes('country') && (

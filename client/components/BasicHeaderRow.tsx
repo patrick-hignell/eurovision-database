@@ -26,7 +26,7 @@ export default function BasicHeaderRow() {
         <p>Costume</p>
       </th>
       <th className="header favourite">
-        <i className="bi bi-star-fill"></i>
+        <i className="bi bi-star-fill "></i>
       </th>
     </tr>
   )
