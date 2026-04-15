@@ -33,7 +33,7 @@ export default function Spreadsheet({
           /> */}
           <BasicHeaderRow />
         </thead>
-        <tbody className="block max-h-[54rem] overflow-scroll font-normal">
+        <tbody className="no-scrollbar block max-h-[54rem] overflow-scroll font-normal">
           {hasFilterRow && (
             <FilterRow filter={filter} onFilterChange={onFilterChange} />
           )}

@@ -30,6 +30,7 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     { value: 'points', label: 'Points' },
     { value: 'link', label: 'Link' },
     { value: 'costume', label: 'Costume' },
+    { value: 'favourite', label: 'Favourite' },
   ]
 
   const numberSearchFunctions: OptionType[] = [
@@ -46,6 +47,11 @@ function BasicSearch({ onSearchArrayChange }: Props) {
     { value: 'includes', label: 'Includes' },
     { value: 'exact', label: 'Exact' },
     { value: 'excludes', label: 'Excludes' },
+  ]
+
+  const booleanSearchFunctions: OptionType[] = [
+    { value: 'selected', label: 'Selected' },
+    { value: 'not selected', label: 'Not Selected' },
   ]
 
   // const AndOrFunctions: OptionType[] = [
@@ -160,22 +166,33 @@ function BasicSearch({ onSearchArrayChange }: Props) {
               <Select
                 className="w-40 lg:w-48"
                 options={
-                  searchArray[index].categoryOption?.value === 'country' ||
-                  searchArray[index].categoryOption?.value === 'artist' ||
-                  searchArray[index].categoryOption?.value === 'song' ||
-                  searchArray[index].categoryOption?.value === 'language' ||
-                  searchArray[index].categoryOption?.value === 'link'
-                    ? stringSearchFunctions
-                    : numberSearchFunctions
+                  searchArray[index].categoryOption?.value === 'favourite'
+                    ? booleanSearchFunctions
+                    : searchArray[index].categoryOption?.value === 'country' ||
+                        searchArray[index].categoryOption?.value === 'artist' ||
+                        searchArray[index].categoryOption?.value === 'song' ||
+                        searchArray[index].categoryOption?.value ===
+                          'language' ||
+                        searchArray[index].categoryOption?.value === 'link'
+                      ? stringSearchFunctions
+                      : numberSearchFunctions
                 }
                 value={searchArray[index].functionOption}
                 onChange={(e) => handleFunctionChange(e, index)}
               />
-              <input
-                className="h-9 w-40 rounded-[0.2rem]  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-48"
-                value={searchArray[index].searchOption?.value}
-                onChange={(e) => handleSearchChange(e, index)}
-              />
+              {searchArray[index].categoryOption?.value !== 'favourite' ? (
+                <input
+                  className="h-9 w-40 rounded-[0.2rem]  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-48"
+                  value={searchArray[index].searchOption?.value}
+                  onChange={(e) => handleSearchChange(e, index)}
+                />
+              ) : (
+                <p className="w-40 rounded-[0.2rem] bg-white text-center outline outline-1 outline-gray-300 focus:outline-2  lg:w-48">
+                  <i
+                    className={`bi bi-${searchArray[index].functionOption?.value === 'selected' ? 'star-fill' : 'star'} text-3xl`}
+                  ></i>
+                </p>
+              )}
             </div>
             {index < searchArray.length - 1 && (
               <div className="h-10 pb-1 pt-2">

@@ -22,11 +22,11 @@ export default function BasicHeaderRow() {
       <th className="header points">
         <p>Points</p>
       </th>
-      <th className="header link">
-        <p>Link</p>
-      </th>
       <th className="header costume">
         <p>Costume</p>
+      </th>
+      <th className="header favourite">
+        <i className="bi bi-star-fill"></i>
       </th>
     </tr>
   )

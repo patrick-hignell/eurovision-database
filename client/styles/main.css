@@ -22,37 +22,51 @@ input.filter {
 }
 
 .country {
-  @apply w-[100px];
+  @apply w-[10%];
 }
 
 .year {
-  @apply w-[100px];
+  @apply w-[10%];
 }
 
 .artist {
-  @apply w-[260px];
+  @apply w-[17.5%];
 }
 
 .song {
-  @apply w-[260px];
+  @apply w-[17.5%];
 }
 
 .language {
-  @apply w-[257.117px];
+  @apply w-[10%];
 }
 
 .position {
-  @apply w-[100px];
+  @apply w-[10%];
 }
 
 .points {
-  @apply w-[100px];
+  @apply w-[10%];
 }
 
 .link {
-  @apply w-[257.117px];
+  @apply w-[10%];
 }
 
 .costume {
-  @apply w-[100px];
+  @apply w-[10%];
+}
+
+.favourite {
+  @apply w-[5%];
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }

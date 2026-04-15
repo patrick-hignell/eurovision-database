@@ -24,12 +24,16 @@ function Options({
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
   const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
   const [iconSize, setIconSize] = useState({ value: '5', label: '5' })
-  const [iconCategories, setIconCategories] = useState<MultiValue<OptionType>>([
+
+  const defaultCategories: MultiValue<OptionType> = [
     { value: 'country', label: 'Country' },
     { value: 'year', label: 'Year' },
     { value: 'artist', label: 'Artist' },
     { value: 'song', label: 'Song' },
-  ])
+    { value: 'favourite', label: 'Favourite' },
+  ]
+  const [iconCategories, setIconCategories] =
+    useState<MultiValue<OptionType>>(defaultCategories)
   const [searchMode, setSearchMode] = useState({
     value: 'Basic',
     label: 'Basic',
@@ -68,6 +72,7 @@ function Options({
     { value: 'points', label: 'Points' },
     { value: 'link', label: 'Link' },
     { value: 'costume', label: 'Costume' },
+    { value: 'favourite', label: 'Favourite' },
   ]
 
   function handleModeChange(e: SingleValue<OptionType>) {
@@ -104,12 +109,7 @@ function Options({
       value: 'Basic',
       label: 'Basic',
     })
-    setIconCategories([
-      { value: 'country', label: 'Country' },
-      { value: 'year', label: 'Year' },
-      { value: 'artist', label: 'Artist' },
-      { value: 'song', label: 'Song' },
-    ])
+    setIconCategories(defaultCategories)
   }
 
   return (
