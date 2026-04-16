@@ -5,6 +5,7 @@ import {
   Category,
   EntryWithImages,
   FilterEntry,
+  FilterType,
   OptionType,
   SearchArrayElement,
   TableOptions,
@@ -15,10 +16,11 @@ import IconList from './IconList'
 import BasicSearch from './BasicSearch'
 import DialogModal from './DialogModal'
 import Options from './Options'
-import Select from 'react-select'
+import Select, { MultiValue } from 'react-select'
 import { SingleValue } from 'react-select'
 import MediaQuery from 'react-responsive'
 import InfoPanelSmall from './InfoPanelSmall'
+import Filter from './Filter'
 
 export default function TablePage() {
   const {
@@ -58,6 +60,69 @@ export default function TablePage() {
     favourite: { isExact: false, value: '', dir: 'asc' },
   }
 
+  const defaultFilter: FilterType = {
+    country: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    year: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    artist: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    song: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    language: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    position: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    points: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    link: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    costume: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    favourite: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+  }
+
   const sortCategories: OptionType[] = [
     { value: 'country', label: 'Country' },
     { value: 'year', label: 'Year' },
@@ -70,6 +135,7 @@ export default function TablePage() {
     { value: 'favourite', label: 'Favourite' },
   ]
 
+  const [filterOptions, setFilterOptions] = useState<FilterType>(defaultFilter)
   const [onload, setOnLoad] = useState(true)
   const [favourites, setFavourites] = useState<number[]>(() =>
     extractFavouritesFromUrl(),
@@ -88,6 +154,7 @@ export default function TablePage() {
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const defaultOptions: TableOptions = {
     tableMode: 'Icons',
     gallerySize: 5,
@@ -133,6 +200,24 @@ export default function TablePage() {
       } else {
         entry.favourite = false
       }
+      setFilterOptions((prevFilter) => {
+        const updatedFilter = prevFilter
+        Object.entries(entry).forEach(([key, value]) => {
+          if (!updatedFilter[key as Category]) return
+          if (
+            !updatedFilter[key as Category].multiValue.some(
+              (singleMulti) => singleMulti.value === value,
+            )
+          ) {
+            updatedFilter[key as Category].multiValue = [
+              ...updatedFilter[key as Category].multiValue,
+              { value: value, label: capitalize(value) },
+            ]
+          }
+        })
+        return updatedFilter
+      })
+
       return entry
     })
 
@@ -340,6 +425,9 @@ export default function TablePage() {
   const handleOptionsOpen = () => setIsOptionsOpen(true)
   const handleOptionsClose = () => setIsOptionsOpen(false)
 
+  const handleFilterOpen = () => setIsFilterOpen(true)
+  const handleFilterClose = () => setIsFilterOpen(false)
+
   function handleModeChange(newMode: string) {
     setTableOptions((prevOptions) => {
       return { ...prevOptions, tableMode: newMode }
@@ -389,6 +477,27 @@ export default function TablePage() {
     }
   }
 
+  function handleFilterOptionsFunctionChange(
+    e: SingleValue<OptionType>,
+    category: Category,
+  ) {
+    if (!e) return
+    setFilterOptions((prevFilter) => ({
+      ...prevFilter,
+      [category]: { ...prevFilter[category], function: e },
+    }))
+  }
+
+  function handleFilterOptionsMultiChange(
+    e: MultiValue<OptionType>,
+    category: Category,
+  ) {
+    setFilterOptions((prevFilter) => ({
+      ...prevFilter,
+      [category]: { ...prevFilter[category], selectedMultiValue: e },
+    }))
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
@@ -417,6 +526,14 @@ export default function TablePage() {
           updateIconCategoriesChange={handleIconCategoriesChange}
         />
       </DialogModal>
+      <DialogModal isOpen={isFilterOpen} onClose={handleFilterClose}>
+        <Filter
+          handleFilterClose={handleFilterClose}
+          filterOptions={filterOptions}
+          handleFilterOptionsFunctionChange={handleFilterOptionsFunctionChange}
+          handleFilterOptionsMultiChange={handleFilterOptionsMultiChange}
+        />
+      </DialogModal>
       <div className="flex flex-col justify-center">
         <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
         {tableOptions.searchMode === 'Basic' && (
@@ -426,7 +543,7 @@ export default function TablePage() {
           />
         )}
         <div className="mb-1 flex w-full justify-start">
-          <div className="flex w-1/3 gap-1">
+          <div className="flex w-1/4 gap-1">
             <button onClick={() => handleCaretClick(sortCategory)}>
               <i
                 className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} text-4xl`}
@@ -439,14 +556,19 @@ export default function TablePage() {
               onChange={(e) => handleSortOptionChange(e)}
             />
           </div>
-          <div className="flex w-1/3 justify-center">
+          <div className="flex w-1/4 justify-center">
+            <button onClick={handleFilterOpen}>
+              <i className="bi bi-funnel-fill text-3xl"></i>
+            </button>
+          </div>
+          <div className="flex w-1/4 justify-center">
             <button onClick={handleStarClick}>
               <i
                 className={`bi bi-${selectedEntry.favourite ? 'star-fill' : 'star'} text-3xl`}
               ></i>
             </button>
           </div>
-          <div className="flex w-1/3 justify-end">
+          <div className="flex w-1/4 justify-end">
             <button onClick={handleOptionsOpen}>
               <i className="bi bi-gear-fill text-3xl"></i>
             </button>
@@ -561,4 +683,9 @@ function checkSearchOption(
     default:
       return false
   }
+}
+
+function capitalize(str: string | number | boolean) {
+  // if (typeof str !== "string") return  str
+  return str.toString().charAt(0).toUpperCase() + str.toString().slice(1)
 }

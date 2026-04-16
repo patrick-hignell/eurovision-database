@@ -1,4 +1,4 @@
-import { SingleValue } from 'react-select'
+import { MultiValue, SingleValue } from 'react-select'
 
 export interface EntryData {
   id: number
@@ -99,3 +99,23 @@ export interface TableOptions {
 //   id: number
 //   favourite: boolean
 // }
+
+export interface FilterType {
+  country: FilterCategory
+  year: FilterCategory
+  artist: FilterCategory
+  song: FilterCategory
+  language: FilterCategory
+  position: FilterCategory
+  points: FilterCategory
+  link: FilterCategory
+  costume: FilterCategory
+  favourite: FilterCategory
+}
+
+export interface FilterCategory {
+  function: OptionType
+  multiValue: MultiValue<OptionType>
+  selectedMultiValue: MultiValue<OptionType>
+  search: string
+}
