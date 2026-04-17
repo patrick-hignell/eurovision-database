@@ -513,7 +513,7 @@ export default function TablePage() {
   return (
     <div className="flex min-w-[32rem] flex-col gap-4 pb-8 pt-8 lg:w-5/6">
       <h1 className="text-3xl font-bold underline">
-        Eurovision Costume Database
+        The Unofficial Eurovision Costume Database
       </h1>
       <MediaQuery minWidth={1224}>
         <InfoPanel {...selectedEntry} />
@@ -554,7 +554,7 @@ export default function TablePage() {
           </div>
         )}
         <div className="mb-4 flex w-full justify-between">
-          <div className="flex gap-1 rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div className="flex gap-1 rounded-xl bg-white bg-opacity-25 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button
               className="flex"
               onClick={() => handleCaretClick(sortCategory)}
@@ -568,6 +568,17 @@ export default function TablePage() {
               ></i>
             </button>
             <Select
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: '0.75rem', // Tailwind rounded-xl
+                  border: '1px solid #d1d5db',
+                }),
+                menu: (base) => ({
+                  ...base,
+                  borderRadius: '0.75rem',
+                }),
+              }}
               className="w-40 lg:w-48"
               options={sortCategories}
               value={sortOption}
@@ -594,7 +605,7 @@ export default function TablePage() {
                 </p>
               </MediaQuery>
               <i
-                className={`bi bi-${selectedEntry.favourite ? 'star-fill' : 'star'} pt-[0.14rem] text-3xl`}
+                className={`bi bi-${selectedEntry.favourite ? 'star' : 'star-fill'} pt-[0.14rem] text-3xl`}
               ></i>
             </button>
           </div>
