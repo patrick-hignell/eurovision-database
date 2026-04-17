@@ -1,8 +1,8 @@
 import Select, { MultiValue, SingleValue } from 'react-select'
 import { OptionType, FilterType, Category } from '../../models/entry'
+import { ChangeEvent } from 'react'
 
 interface Props {
-  handleFilterClose: () => void
   filterOptions: FilterType
   handleFilterOptionsFunctionChange: (
     e: SingleValue<OptionType>,
@@ -12,70 +12,115 @@ interface Props {
     e: MultiValue<OptionType>,
     category: Category,
   ) => void
+  handleFilterOptionsSearchChange: (
+    e: ChangeEvent<HTMLInputElement>,
+    category: Category,
+  ) => void
 }
 
 export default function Filter({
-  handleFilterClose,
   filterOptions,
   handleFilterOptionsFunctionChange,
   handleFilterOptionsMultiChange,
+  handleFilterOptionsSearchChange,
 }: Props) {
   const stringSearchFunctions: OptionType[] = [
     { value: 'all', label: 'All' },
-    { value: 'multiple', label: 'Multiple' },
+    { value: 'multiple', label: 'Select Multiple' },
     { value: 'search', label: 'Search' },
   ]
 
+  const numberSearchFunctions: OptionType[] = [
+    { value: 'all', label: 'All' },
+    { value: 'multiple', label: 'Select Multiple' },
+    { value: 'search', label: 'Search' },
+    { value: '>', label: 'Greater Than' },
+    { value: '<', label: 'Less Than' },
+    { value: '>=', label: 'At Least' },
+    { value: '<=', label: 'At Most' },
+  ]
+
+  const booleanSearchFunctions: OptionType[] = [
+    { value: 'all', label: 'All' },
+    { value: 'favourites only', label: 'Favourites Only' },
+    { value: 'non favourites only', label: 'Non Favourites Only' },
+  ]
+
+  function getSearchFunction(str: string) {
+    switch (str) {
+      case 'year':
+      case 'position':
+      case 'points':
+      case 'costume':
+        return numberSearchFunctions
+      case 'favourite':
+        return booleanSearchFunctions
+      default:
+        return stringSearchFunctions
+    }
+  }
+
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="h-fit w-fit rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-4 pb-6 pt-4 outline outline-white">
-        <div className="flex w-full flex-row-reverse">
-          <button
-            className=" h-8  w-8 rounded bg-white bg-opacity-25 outline outline-white"
-            onClick={handleFilterClose}
-          >
-            <i className="bi bi-x text-3xl"></i>
-          </button>
-        </div>
-        <div className="px-12">
-          <h2 className="mb-1 text-2xl">Filter</h2>
-          <div className="flex items-center gap-2">
-            <p className="text-xl">Country: </p>
+    <div className="flex flex-col items-center">
+      <h2 className="mb-1 text-2xl font-bold underline">Filter Options</h2>
+      <div className="flex h-full flex-col gap-2">
+        {Object.entries(filterOptions).map(([optionKey, optionValue]) => (
+          <div key={optionKey} className="flex items-start gap-2">
+            <p className="mt-1 w-24 text-left text-xl md:w-28">
+              {capitalize(optionKey)}:{' '}
+            </p>
             <Select
               className="w-48"
-              options={stringSearchFunctions}
-              value={filterOptions.country.function}
-              onChange={(e) => handleFilterOptionsFunctionChange(e, 'country')}
+              options={getSearchFunction(optionKey)}
+              value={optionValue.function}
+              styles={{ menu: (base) => ({ ...base, marginTop: 0 }) }}
+              onChange={(e) =>
+                handleFilterOptionsFunctionChange(e, optionKey as Category)
+              }
             />
-            {filterOptions.country.function.value === 'all' && (
-              <input
-                className="h-9 w-40 rounded-[0.2rem]  bg-gray-200 p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-48"
-                value={''}
-              />
+            {(optionValue.function.value === 'all' ||
+              optionValue.function.value === 'favourites only' ||
+              optionValue.function.value === 'non favourites only') && (
+              <div className="h-9 w-64 rounded-[0.2rem] bg-gray-200  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-96" />
             )}
-            {filterOptions.country.function.value === 'multiple' && (
+            {optionValue.function.value === 'multiple' && (
               <Select
                 isMulti
                 classNames={{
-                  control: () => 'min-h-[30px] w-96 text-sm', // Force smaller height
+                  control: () => 'min-h-[30px] w-64 lg:w-96 text-sm', // Force smaller height
                   valueContainer: () => 'p-0 px-2', // Remove vertical padding
-                  dropdownIndicator: () => 'p-0 pr-2', // Slim down the arrow container
+                  dropdownIndicator: () =>
+                    'p-0 pr-2 max-h-[90px] overflow-y-auto', // Slim down the arrow container
                   input: () => 'm-0 p-0', // Prevent input from pushing height
                 }}
-                options={filterOptions.country.multiValue}
-                value={filterOptions.country.selectedMultiValue}
-                onChange={(e) => handleFilterOptionsMultiChange(e, 'country')}
+                styles={{ menu: (base) => ({ ...base, marginTop: 0 }) }}
+                options={optionValue.multiValue}
+                value={optionValue.selectedMultiValue}
+                onChange={(e) =>
+                  handleFilterOptionsMultiChange(e, optionKey as Category)
+                }
               />
             )}
-            {filterOptions.country.function.value === 'search' && (
-              <input
-                className="h-9 w-40 rounded-[0.2rem]  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-48"
-                value={''}
-              />
-            )}
+            {optionValue.function.value !== 'all' &&
+              optionValue.function.value !== 'multiple' &&
+              optionValue.function.value !== 'favourites only' &&
+              optionValue.function.value !== 'non favourites only' && (
+                <input
+                  className="h-9 w-64 rounded-[0.2rem] p-1 outline  outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-96"
+                  value={optionValue.search}
+                  onChange={(e) =>
+                    handleFilterOptionsSearchChange(e, optionKey as Category)
+                  }
+                />
+              )}
           </div>
-        </div>
+        ))}
       </div>
     </div>
   )
+}
+
+function capitalize(str: string | number | boolean) {
+  // if (typeof str !== "string") return  str
+  return str.toString().charAt(0).toUpperCase() + str.toString().slice(1)
 }
