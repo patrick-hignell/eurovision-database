@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import { Entry } from '../../models/entry'
+import { EntryWithImages } from '../../models/entry'
 
-export default function InfoPanel(entry: Entry) {
+export default function InfoPanel(entry: EntryWithImages) {
   return (
     <div className="rounded-sm bg-white bg-opacity-25 outline outline-1 outline-white">
       {entry.id == -1 && <p className="text-3xl">Select an entry to begin</p>}
@@ -9,6 +9,12 @@ export default function InfoPanel(entry: Entry) {
         <table className="w-full table-fixed">
           <tbody>
             <tr>
+              {entry.favourite && (
+                <td rowSpan={2} width="40rem" className="relative">
+                  <i className="bi bi-star-fill absolute left-1 top-2 pl-1 text-3xl text-yellow-400"></i>
+                  <i className="bi bi-star absolute left-1 top-2 pl-1 text-3xl"></i>
+                </td>
+              )}
               <td>
                 <span className="font-extrabold underline">Country</span>
                 {`: ${entry.country}`}

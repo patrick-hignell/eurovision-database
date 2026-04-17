@@ -1,6 +1,12 @@
 import Select, { MultiValue, SingleValue } from 'react-select'
 import { OptionType, FilterType, Category } from '../../models/entry'
 import { ChangeEvent } from 'react'
+import {
+  capitalize,
+  stringSearchFunctions,
+  numberSearchFunctions,
+  booleanSearchFunctions,
+} from '../utils/main'
 
 interface Props {
   filterOptions: FilterType
@@ -24,28 +30,6 @@ export default function Filter({
   handleFilterOptionsMultiChange,
   handleFilterOptionsSearchChange,
 }: Props) {
-  const stringSearchFunctions: OptionType[] = [
-    { value: 'all', label: 'All' },
-    { value: 'multiple', label: 'Select Multiple' },
-    { value: 'search', label: 'Search' },
-  ]
-
-  const numberSearchFunctions: OptionType[] = [
-    { value: 'all', label: 'All' },
-    { value: 'multiple', label: 'Select Multiple' },
-    { value: 'search', label: 'Search' },
-    { value: '>', label: 'Greater Than' },
-    { value: '<', label: 'Less Than' },
-    { value: '>=', label: 'At Least' },
-    { value: '<=', label: 'At Most' },
-  ]
-
-  const booleanSearchFunctions: OptionType[] = [
-    { value: 'all', label: 'All' },
-    { value: 'favourites only', label: 'Favourites Only' },
-    { value: 'non favourites only', label: 'Non Favourites Only' },
-  ]
-
   function getSearchFunction(str: string) {
     switch (str) {
       case 'year':
@@ -62,8 +46,7 @@ export default function Filter({
 
   return (
     <div className="flex flex-col items-center">
-      <h2 className="mb-1 text-2xl font-bold underline">Filter Options</h2>
-      <div className="flex h-full flex-col gap-2">
+      <div className="flex h-full flex-col gap-2 rounded-sm bg-white bg-opacity-10 p-2 outline outline-1 outline-white">
         {Object.entries(filterOptions).map(([optionKey, optionValue]) => (
           <div key={optionKey} className="flex items-start gap-2">
             <p className="mt-1 w-24 text-left text-xl md:w-28">
@@ -118,9 +101,4 @@ export default function Filter({
       </div>
     </div>
   )
-}
-
-function capitalize(str: string | number | boolean) {
-  // if (typeof str !== "string") return  str
-  return str.toString().charAt(0).toUpperCase() + str.toString().slice(1)
 }

@@ -21,6 +21,12 @@ import { SingleValue } from 'react-select'
 import MediaQuery from 'react-responsive'
 import InfoPanelSmall from './InfoPanelSmall'
 import Filter from './Filter'
+import {
+  capitalize,
+  stringSearchFunctions,
+  numberSearchFunctions,
+  booleanSearchFunctions,
+} from '../utils/main'
 
 export default function TablePage() {
   const {
@@ -230,17 +236,6 @@ export default function TablePage() {
   }, [data, filter, sortCategory])
 
   useEffect(() => {
-    const categoryOptions = [
-      'country',
-      'year',
-      'artist',
-      'song',
-      'language',
-      'position',
-      'points',
-      'link',
-      'costume',
-    ]
     const searchWithFavourites = preFilteredEntries.map((entry) => {
       if (favourites.includes(entry.id)) {
         entry.favourite = true
@@ -251,113 +246,7 @@ export default function TablePage() {
       return entry
     })
 
-    const postFilteredEntries = searchWithFavourites.filter((entry) =>
-      categoryOptions.every((option) => {
-        const filterValueArray = String(filter[option as Category].value).split(
-          ';',
-        )
-        return filterValueArray.every((filterValue) => {
-          const filterStringTrim = filterValue.replace(/\s/g, '').toLowerCase()
-          const filterString = filterValue.toLowerCase()
-          const entryString = String(entry[option as Category]).toLowerCase()
-          if (
-            filterStringTrim.charAt(0) === '=' &&
-            filterStringTrim.length > 1
-          ) {
-            return (
-              Number(entryString) === Number(filterStringTrim.slice(1)) ||
-              entryString === filterString.slice(1)
-            )
-          }
-          if (
-            filterStringTrim.slice(0, 2) === '>=' &&
-            filterStringTrim.length > 2
-          ) {
-            return Number(entryString) >= Number(filterStringTrim.slice(2))
-          }
-          if (
-            filterStringTrim.slice(0, 2) === '<=' &&
-            filterStringTrim.length > 2
-          ) {
-            return Number(entryString) <= Number(filterStringTrim.slice(2))
-          }
-          if (
-            filterStringTrim.charAt(0) === '>' &&
-            filterStringTrim.length > 1
-          ) {
-            return Number(entryString) > Number(filterStringTrim.slice(1))
-          }
-          if (
-            filterStringTrim.charAt(0) === '<' &&
-            filterStringTrim.length > 1
-          ) {
-            return Number(entryString) < Number(filterStringTrim.slice(1))
-          }
-          if (filterString.slice(0, 2) === '-=') {
-            if (filterString.length === 2) {
-              return entryString.length > 0
-            }
-            return !entryString.includes(filterString.slice(2))
-          }
-
-          return entryString.includes(filterString)
-        })
-      }),
-    )
-
-    const splitSearchArray: SearchArrayElement[][] = [[]]
-
-    searchArray?.forEach((searchElement) => {
-      splitSearchArray[splitSearchArray.length - 1].push(searchElement)
-      if (searchElement.isAnd) {
-        splitSearchArray.push([])
-      }
-    })
-    let postSimpleSearch = []
-    if (splitSearchArray[0].length > 0) {
-      postSimpleSearch = postFilteredEntries.filter((entry) => {
-        return splitSearchArray?.every((splitElement) => {
-          return splitElement.some((searchElement) => {
-            if (!searchElement.functionOption) {
-              console.log('no function option')
-              return false
-            }
-            if (searchElement.categoryOption?.value === 'all') {
-              if (searchElement.functionOption?.value === 'excludes') {
-                return Object.keys(entry).every((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              } else {
-                return Object.keys(entry).some((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              }
-            } else if (searchElement.categoryOption) {
-              return checkSearchOption(
-                entry[searchElement.categoryOption.value as Category],
-                searchElement.functionOption?.value as string,
-                searchElement.searchOption?.value as string,
-              )
-            } else {
-              console.log('something went wrong')
-              return false
-            }
-          })
-        })
-      })
-    } else {
-      postSimpleSearch = [...postFilteredEntries]
-    }
-
-    const postFilterOptions = postSimpleSearch.filter((entry) => {
+    const postFilterOptions = searchWithFavourites.filter((entry) => {
       return Object.entries(filterOptions).every(([key, value]) => {
         if (value.function.value === 'all') {
           return true
@@ -495,7 +384,7 @@ export default function TablePage() {
       result[key as Category] = {
         ...defaultFilter[key as Category],
         function: fn
-          ? { value: fn, label: fn }
+          ? getFunction(fn)
           : defaultFilter[key as Category].function,
         search: search ?? '',
         selectedMultiValue: multi
@@ -664,18 +553,18 @@ export default function TablePage() {
             />
           </div>
         )}
-        <div className="mb-1 flex w-full justify-between">
-          <div className="flex gap-1">
+        <div className="mb-4 flex w-full justify-between">
+          <div className="flex gap-1 rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button
               className="flex"
               onClick={() => handleCaretClick(sortCategory)}
             >
               <MediaQuery minWidth={1224}>
-                <p className="pt-2 text-xl">Sort: </p>
+                <p className="pt-[0.4rem] text-xl">Sort: </p>
               </MediaQuery>
 
               <i
-                className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} text-4xl`}
+                className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} pt-[0.1rem] text-4xl`}
               ></i>
             </button>
             <Select
@@ -685,34 +574,36 @@ export default function TablePage() {
               onChange={(e) => handleSortOptionChange(e)}
             />
           </div>
-          <div className="flex justify-center">
+          <div
+            className={`flex rounded-xl bg-white ${isFilterOpen ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+          >
             <button className="flex" onClick={handleFilterOpenChange}>
               <MediaQuery minWidth={1224}>
-                <p className="pt-2 text-xl">
+                <p className="pt-[0.4rem] text-xl">
                   {isFilterOpen ? 'Close' : 'Open'} Filter:{' '}
                 </p>
               </MediaQuery>
-              <i className="bi bi-funnel-fill text-3xl"></i>
+              <i className="bi bi-funnel-fill pt-1 text-3xl"></i>
             </button>
           </div>
-          <div className="flex justify-center">
+          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button className="flex" onClick={handleStarClick}>
               <MediaQuery minWidth={1224}>
-                <p className="pt-2 text-xl">
+                <p className="pr-1 pt-[0.4rem] text-xl">
                   {selectedEntry.favourite ? 'Remove' : 'Add'} Favourite:{' '}
                 </p>
               </MediaQuery>
               <i
-                className={`bi bi-${selectedEntry.favourite ? 'star-fill text-yellow-400' : 'star'} text-3xl`}
+                className={`bi bi-${selectedEntry.favourite ? 'star-fill' : 'star'} pt-[0.14rem] text-3xl`}
               ></i>
             </button>
           </div>
-          <div className="flex justify-end">
+          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button className="flex" onClick={handleOptionsOpen}>
               <MediaQuery minWidth={1224}>
-                <p className="pt-2 text-xl">Options: </p>
+                <p className="pr-1 pt-[0.4rem] text-xl">Options: </p>
               </MediaQuery>
-              <i className="bi bi-gear-fill text-3xl"></i>
+              <i className="bi bi-gear-fill pt-1 text-3xl"></i>
             </button>
           </div>
         </div>
@@ -829,7 +720,12 @@ function checkSearchOption(
   }
 }
 
-function capitalize(str: string | number | boolean) {
-  // if (typeof str !== "string") return  str
-  return str.toString().charAt(0).toUpperCase() + str.toString().slice(1)
+function getFunction(fn: string) {
+  // Use find() to stop iterating when a match is found and return it
+  return (
+    stringSearchFunctions.find((element) => element.value == fn) ??
+    numberSearchFunctions.find((element) => element.value == fn) ??
+    booleanSearchFunctions.find((element) => element.value == fn) ??
+    stringSearchFunctions[0]
+  )
 }
