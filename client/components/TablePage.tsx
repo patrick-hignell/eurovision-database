@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useEntriesWithImages } from '../hooks/useEntriesWithImages'
 import Spreadsheet from './Spreadsheet'
 import {
   Category,
   EntryWithImages,
   FilterEntry,
+  FilterType,
   OptionType,
   SearchArrayElement,
   TableOptions,
@@ -15,8 +16,17 @@ import IconList from './IconList'
 import BasicSearch from './BasicSearch'
 import DialogModal from './DialogModal'
 import Options from './Options'
-import Select from 'react-select'
+import Select, { MultiValue } from 'react-select'
 import { SingleValue } from 'react-select'
+import MediaQuery from 'react-responsive'
+import InfoPanelSmall from './InfoPanelSmall'
+import Filter from './Filter'
+import {
+  capitalize,
+  stringSearchFunctions,
+  numberSearchFunctions,
+  booleanSearchFunctions,
+} from '../utils/main'
 
 export default function TablePage() {
   const {
@@ -52,8 +62,71 @@ export default function TablePage() {
     position: { isExact: false, value: '', dir: 'asc' },
     points: { isExact: false, value: '', dir: 'asc' },
     link: { isExact: false, value: '', dir: 'asc' },
-    costume: { isExact: false, value: '', dir: 'asc' },
+    costume: { isExact: false, value: '', dir: 'desc' },
     favourite: { isExact: false, value: '', dir: 'asc' },
+  }
+
+  const defaultFilter: FilterType = {
+    country: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    year: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    artist: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    song: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    language: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    position: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    points: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    link: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    costume: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
+    favourite: {
+      function: { value: 'all', label: 'All' },
+      multiValue: [],
+      selectedMultiValue: [],
+      search: '',
+    },
   }
 
   const sortCategories: OptionType[] = [
@@ -68,6 +141,9 @@ export default function TablePage() {
     { value: 'favourite', label: 'Favourite' },
   ]
 
+  const [filterOptions, setFilterOptions] = useState<FilterType>(() =>
+    extractFilterOptionsFromUrl(defaultFilter),
+  )
   const [onload, setOnLoad] = useState(true)
   const [favourites, setFavourites] = useState<number[]>(() =>
     extractFavouritesFromUrl(),
@@ -78,19 +154,20 @@ export default function TablePage() {
   >([])
   const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
-  const [sortCategory, setSortCategory] = useState<Category>('country')
+  const [sortCategory, setSortCategory] = useState<Category>('costume')
   const [sortOption, setSortOption] = useState<OptionType>({
-    value: 'country',
-    label: 'Country',
+    value: 'costume',
+    label: 'Costume',
   })
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const defaultOptions: TableOptions = {
     tableMode: 'Icons',
     gallerySize: 5,
     iconSize: 5,
-    searchMode: 'Basic',
+    searchMode: 'Filter',
     iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
   }
   const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
@@ -98,7 +175,52 @@ export default function TablePage() {
   useEffect(() => {
     if (data) {
       if (onload) {
-        setPreFilteredEntries([...data])
+        const postSortedEntries = sortIt(
+          [...data],
+          sortCategory,
+          filter[sortCategory].dir,
+        )
+
+        postSortedEntries.forEach((entry) => {
+          setFilterOptions((prevFilter) => {
+            const updatedFilter = prevFilter
+            Object.entries(entry).forEach(([key, value]) => {
+              if (!updatedFilter[key as Category]) return
+              if (
+                !updatedFilter[key as Category].multiValue.some(
+                  (singleMulti) => singleMulti.value === value,
+                )
+              ) {
+                updatedFilter[key as Category].multiValue = [
+                  ...updatedFilter[key as Category].multiValue,
+                  { value: value, label: capitalize(value) },
+                ]
+              }
+            })
+
+            Object.keys(updatedFilter).forEach((key) => {
+              const numbers = updatedFilter[key as Category].multiValue.filter(
+                (singleMulti) => !isNaN(Number(singleMulti.value)),
+              )
+              const strings = updatedFilter[key as Category].multiValue.filter(
+                (singleMulti) => isNaN(Number(singleMulti.value)),
+              )
+
+              numbers.sort((a, b) => Number(a.value) - Number(b.value))
+
+              strings.sort((a, b) => a.value.localeCompare(b.value))
+
+              updatedFilter[key as Category].multiValue = [
+                ...numbers,
+                ...strings,
+              ]
+            })
+
+            return updatedFilter
+          })
+        })
+
+        setPreFilteredEntries(postSortedEntries)
         setOnLoad(false)
         // console.log('onload')
       } else {
@@ -114,147 +236,74 @@ export default function TablePage() {
   }, [data, filter, sortCategory])
 
   useEffect(() => {
-    const categoryOptions = [
-      'country',
-      'year',
-      'artist',
-      'song',
-      'language',
-      'position',
-      'points',
-      'link',
-      'costume',
-    ]
     const searchWithFavourites = preFilteredEntries.map((entry) => {
       if (favourites.includes(entry.id)) {
         entry.favourite = true
       } else {
         entry.favourite = false
       }
+
       return entry
     })
 
-    const postFilteredEntries = searchWithFavourites.filter((entry) =>
-      categoryOptions.every((option) => {
-        const filterValueArray = String(filter[option as Category].value).split(
-          ';',
-        )
-        return filterValueArray.every((filterValue) => {
-          const filterStringTrim = filterValue.replace(/\s/g, '').toLowerCase()
-          const filterString = filterValue.toLowerCase()
-          const entryString = String(entry[option as Category]).toLowerCase()
-          if (
-            filterStringTrim.charAt(0) === '=' &&
-            filterStringTrim.length > 1
-          ) {
-            return (
-              Number(entryString) === Number(filterStringTrim.slice(1)) ||
-              entryString === filterString.slice(1)
-            )
-          }
-          if (
-            filterStringTrim.slice(0, 2) === '>=' &&
-            filterStringTrim.length > 2
-          ) {
-            return Number(entryString) >= Number(filterStringTrim.slice(2))
-          }
-          if (
-            filterStringTrim.slice(0, 2) === '<=' &&
-            filterStringTrim.length > 2
-          ) {
-            return Number(entryString) <= Number(filterStringTrim.slice(2))
-          }
-          if (
-            filterStringTrim.charAt(0) === '>' &&
-            filterStringTrim.length > 1
-          ) {
-            return Number(entryString) > Number(filterStringTrim.slice(1))
-          }
-          if (
-            filterStringTrim.charAt(0) === '<' &&
-            filterStringTrim.length > 1
-          ) {
-            return Number(entryString) < Number(filterStringTrim.slice(1))
-          }
-          if (filterString.slice(0, 2) === '-=') {
-            if (filterString.length === 2) {
-              return entryString.length > 0
-            }
-            return !entryString.includes(filterString.slice(2))
-          }
-
-          return entryString.includes(filterString)
-        })
-      }),
-    )
-
-    const splitSearchArray: SearchArrayElement[][] = [[]]
-
-    searchArray?.forEach((searchElement) => {
-      splitSearchArray[splitSearchArray.length - 1].push(searchElement)
-      if (searchElement.isAnd) {
-        splitSearchArray.push([])
-      }
-    })
-    let postSimpleSearch = []
-    if (splitSearchArray[0].length > 0) {
-      postSimpleSearch = postFilteredEntries.filter((entry) => {
-        return splitSearchArray?.every((splitElement) => {
-          return splitElement.some((searchElement) => {
-            if (!searchElement.functionOption) {
-              console.log('no function option')
-              return false
-            }
-            if (searchElement.categoryOption?.value === 'all') {
-              if (searchElement.functionOption?.value === 'excludes') {
-                return Object.keys(entry).every((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              } else {
-                return Object.keys(entry).some((entryCategory) =>
-                  checkSearchOption(
-                    entry[entryCategory as Category],
-                    searchElement.functionOption?.value as string,
-                    searchElement.searchOption?.value as string,
-                  ),
-                )
-              }
-            } else if (searchElement.categoryOption) {
-              return checkSearchOption(
-                entry[searchElement.categoryOption.value as Category],
-                searchElement.functionOption?.value as string,
-                searchElement.searchOption?.value as string,
+    const postFilterOptions = searchWithFavourites.filter((entry) => {
+      return Object.entries(filterOptions).every(([key, value]) => {
+        if (value.function.value === 'all') {
+          return true
+        }
+        if (value.function.value === 'multiple') {
+          return value.selectedMultiValue.length == 0
+            ? true
+            : value.selectedMultiValue.some(
+                (multi: { value: string | number | boolean }) => {
+                  return (
+                    String(multi.value).toLowerCase() ==
+                    String(entry[key as Category]).toLowerCase()
+                  )
+                },
               )
-            } else {
-              console.log('something went wrong')
-              return false
-            }
-          })
-        })
-      })
-    } else {
-      postSimpleSearch = [...postFilteredEntries]
-    }
+        }
+        if (value.function.value === 'search') {
+          return value.search == ''
+            ? true
+            : checkSearchOption(
+                entry[key as Category],
+                'includes',
+                value.search,
+              )
+        }
 
-    setEntries(postSimpleSearch)
+        if (key == 'favourite') {
+          return checkSearchOption(
+            entry[key as Category],
+            value.function.value,
+            value.search,
+          )
+        }
+
+        return value.search == ''
+          ? true
+          : checkSearchOption(
+              entry[key as Category],
+              value.function.value,
+              value.search,
+            )
+      })
+    })
+
+    setEntries(postFilterOptions)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preFilteredEntries, searchArray, favourites])
+  }, [preFilteredEntries, searchArray, favourites, filterOptions])
 
   useEffect(() => {
-    if (searchArray !== undefined) {
-      updateUrl()
-      saveToLocalStorage(searchArray, favourites)
-    }
-  }, [searchArray, favourites])
+    updateUrl()
+    saveToLocalStorage(filterOptions, favourites)
+  }, [filterOptions, favourites])
 
   function extractFavouritesFromUrl(): number[] {
     let params = new URLSearchParams(window.location.search)
-    if (!params.get('favs') && !params.get('s_count')) {
+    if (!params.get('favs') && !params.toString().includes('f_')) {
       params = loadFromLocalStorage() ?? params
     }
     const raw = params.get('favs')
@@ -267,35 +316,47 @@ export default function TablePage() {
 
   function updateUrl() {
     const params = new URLSearchParams()
-    searchArray?.forEach((element, index) => {
-      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
-      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
-      params.set(`s${index}_q`, element.searchOption?.value ?? '')
-      params.set(`s${index}_and`, String(element.isAnd))
+    Object.entries(filterOptions).forEach(([key, value]) => {
+      if (value.function.value !== 'all') {
+        params.set(`f_${key}_fn`, value.function.value)
+      }
+      if (value.search !== '') {
+        params.set(`f_${key}_search`, value.search)
+      }
+      if (value.selectedMultiValue.length > 0) {
+        params.set(
+          `f_${key}_multi`,
+          value.selectedMultiValue
+            .map((v: { value: string }) => v.value)
+            .join(','),
+        )
+      }
     })
-
-    params.set('s_count', String(searchArray?.length))
-
     if (favourites.length > 0) {
       params.set('favs', favourites.join(','))
     }
-
     const newUrl = `${window.location.pathname}?${params.toString()}`
     window.history.pushState({}, '', newUrl)
   }
 
-  function saveToLocalStorage(
-    searchArray: SearchArrayElement[] | undefined,
-    favourites: number[],
-  ) {
+  function saveToLocalStorage(filterOptions: FilterType, favourites: number[]) {
     const params = new URLSearchParams()
-    searchArray?.forEach((element, index) => {
-      params.set(`s${index}_cat`, element.categoryOption?.value ?? '')
-      params.set(`s${index}_fn`, element.functionOption?.value ?? '')
-      params.set(`s${index}_q`, element.searchOption?.value ?? '')
-      params.set(`s${index}_and`, String(element.isAnd))
+    Object.entries(filterOptions).forEach(([key, value]) => {
+      if (value.function.value !== 'all') {
+        params.set(`f_${key}_fn`, value.function.value)
+      }
+      if (value.search !== '') {
+        params.set(`f_${key}_search`, value.search)
+      }
+      if (value.selectedMultiValue.length > 0) {
+        params.set(
+          `f_${key}_multi`,
+          value.selectedMultiValue
+            .map((v: { value: string }) => v.value)
+            .join(','),
+        )
+      }
     })
-    params.set('s_count', String(searchArray?.length ?? 0))
     if (favourites.length > 0) {
       params.set('favs', favourites.join(','))
     }
@@ -306,6 +367,32 @@ export default function TablePage() {
     const raw = localStorage.getItem('eurovision_state')
     if (!raw) return null
     return new URLSearchParams(raw)
+  }
+
+  function extractFilterOptionsFromUrl(defaultFilter: FilterType): FilterType {
+    let params = new URLSearchParams(window.location.search)
+    if (!params.get('favs') && !params.toString().includes('f_')) {
+      params = loadFromLocalStorage() ?? params
+    }
+    if (!params.toString().includes('f_')) return defaultFilter
+
+    const result = { ...defaultFilter }
+    Object.keys(defaultFilter).forEach((key) => {
+      const fn = params.get(`f_${key}_fn`)
+      const search = params.get(`f_${key}_search`)
+      const multi = params.get(`f_${key}_multi`)
+      result[key as Category] = {
+        ...defaultFilter[key as Category],
+        function: fn
+          ? getFunction(fn)
+          : defaultFilter[key as Category].function,
+        search: search ?? '',
+        selectedMultiValue: multi
+          ? multi.split(',').map((v) => ({ value: v, label: capitalize(v) }))
+          : [],
+      }
+    })
+    return result
   }
 
   function handleCellClick(entry: EntryWithImages) {
@@ -337,6 +424,8 @@ export default function TablePage() {
 
   const handleOptionsOpen = () => setIsOptionsOpen(true)
   const handleOptionsClose = () => setIsOptionsOpen(false)
+
+  const handleFilterOpenChange = () => setIsFilterOpen((prev) => !prev)
 
   function handleModeChange(newMode: string) {
     setTableOptions((prevOptions) => {
@@ -387,15 +476,51 @@ export default function TablePage() {
     }
   }
 
+  function handleFilterOptionsFunctionChange(
+    e: SingleValue<OptionType>,
+    category: Category,
+  ) {
+    if (!e) return
+    setFilterOptions((prevFilter) => ({
+      ...prevFilter,
+      [category]: { ...prevFilter[category], function: e },
+    }))
+  }
+
+  function handleFilterOptionsMultiChange(
+    e: MultiValue<OptionType>,
+    category: Category,
+  ) {
+    setFilterOptions((prevFilter) => ({
+      ...prevFilter,
+      [category]: { ...prevFilter[category], selectedMultiValue: e },
+    }))
+  }
+
+  function handleFilterOptionsSearchChange(
+    e: ChangeEvent<HTMLInputElement>,
+    category: Category,
+  ) {
+    setFilterOptions((prevFilter) => ({
+      ...prevFilter,
+      [category]: { ...prevFilter[category], search: e.target.value },
+    }))
+  }
+
   if (isPending) return <h2>Is Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
   return (
     <div className="flex min-w-[32rem] flex-col gap-4 pb-8 pt-8 lg:w-5/6">
       <h1 className="text-3xl font-bold underline">
-        Eurovision Costume Database
+        The Unofficial Eurovision Costume Database
       </h1>
-      <InfoPanel {...selectedEntry} />
+      <MediaQuery minWidth={1224}>
+        <InfoPanel {...selectedEntry} />
+      </MediaQuery>
+      <MediaQuery maxWidth={1224}>
+        <InfoPanelSmall {...selectedEntry} />
+      </MediaQuery>
       {selectedEntry.country != '' && (
         <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       )}
@@ -410,38 +535,86 @@ export default function TablePage() {
           updateIconCategoriesChange={handleIconCategoriesChange}
         />
       </DialogModal>
+      {isFilterOpen && (
+        <Filter
+          filterOptions={filterOptions}
+          handleFilterOptionsFunctionChange={handleFilterOptionsFunctionChange}
+          handleFilterOptionsMultiChange={handleFilterOptionsMultiChange}
+          handleFilterOptionsSearchChange={handleFilterOptionsSearchChange}
+        />
+      )}
       <div className="flex flex-col justify-center">
-        <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
         {tableOptions.searchMode === 'Basic' && (
-          <BasicSearch
-            onSearchArrayChange={handleSearchArrayChange}
-            loadFromLocalStorage={loadFromLocalStorage}
-          />
+          <div>
+            <p className="mb-1 text-2xl font-bold underline">Filter Results</p>
+            <BasicSearch
+              onSearchArrayChange={handleSearchArrayChange}
+              loadFromLocalStorage={loadFromLocalStorage}
+            />
+          </div>
         )}
-        <div className="mb-1 flex w-full justify-start">
-          <div className="flex w-1/3 gap-1">
-            <button onClick={() => handleCaretClick(sortCategory)}>
+        <div className="mb-4 flex w-full justify-between">
+          <div className="flex gap-1 rounded-xl bg-white bg-opacity-25 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+            <button
+              className="flex"
+              onClick={() => handleCaretClick(sortCategory)}
+            >
+              <MediaQuery minWidth={1224}>
+                <p className="pt-[0.4rem] text-xl">Sort: </p>
+              </MediaQuery>
+
               <i
-                className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} text-4xl`}
+                className={`bi bi-sort-${filter[sortCategory].dir == 'asc' ? 'down-alt' : 'up'} pt-[0.1rem] text-4xl`}
               ></i>
             </button>
             <Select
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderRadius: '0.75rem', // Tailwind rounded-xl
+                  border: '1px solid #d1d5db',
+                }),
+                menu: (base) => ({
+                  ...base,
+                  borderRadius: '0.75rem',
+                }),
+              }}
               className="w-40 lg:w-48"
               options={sortCategories}
               value={sortOption}
               onChange={(e) => handleSortOptionChange(e)}
             />
           </div>
-          <div className="flex w-1/3 justify-center">
-            <button onClick={handleStarClick}>
+          <div
+            className={`flex rounded-xl bg-white ${isFilterOpen ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+          >
+            <button className="flex" onClick={handleFilterOpenChange}>
+              <MediaQuery minWidth={1224}>
+                <p className="pt-[0.4rem] text-xl">
+                  {isFilterOpen ? 'Close' : 'Open'} Filter:{' '}
+                </p>
+              </MediaQuery>
+              <i className="bi bi-funnel-fill pt-1 text-3xl"></i>
+            </button>
+          </div>
+          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+            <button className="flex" onClick={handleStarClick}>
+              <MediaQuery minWidth={1224}>
+                <p className="pr-1 pt-[0.4rem] text-xl">
+                  {selectedEntry.favourite ? 'Remove' : 'Add'} Favourite:{' '}
+                </p>
+              </MediaQuery>
               <i
-                className={`bi bi-${selectedEntry.favourite ? 'star-fill' : 'star'} text-3xl`}
+                className={`bi bi-${selectedEntry.favourite ? 'star' : 'star-fill'} pt-[0.14rem] text-3xl`}
               ></i>
             </button>
           </div>
-          <div className="flex w-1/3 justify-end">
-            <button onClick={handleOptionsOpen}>
-              <i className="bi bi-gear-fill text-3xl"></i>
+          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+            <button className="flex" onClick={handleOptionsOpen}>
+              <MediaQuery minWidth={1224}>
+                <p className="pr-1 pt-[0.4rem] text-xl">Options: </p>
+              </MediaQuery>
+              <i className="bi bi-gear-fill pt-1 text-3xl"></i>
             </button>
           </div>
         </div>
@@ -539,6 +712,8 @@ function checkSearchOption(
             .toLowerCase()
             .includes(String(searchValue).toLowerCase())
         : String(entryValue).length > 0
+    case '=':
+      return Number(entryValue) == Number(searchValue)
     case '>':
       return Number(entryValue) > Number(searchValue)
     case '>=':
@@ -547,11 +722,21 @@ function checkSearchOption(
       return Number(entryValue) < Number(searchValue)
     case '<=':
       return Number(entryValue) <= Number(searchValue)
-    case 'selected':
+    case 'favourites only':
       return entryValue === true
-    case 'not selected':
+    case 'non favourites only':
       return entryValue === false
     default:
       return false
   }
+}
+
+function getFunction(fn: string) {
+  // Use find() to stop iterating when a match is found and return it
+  return (
+    stringSearchFunctions.find((element) => element.value == fn) ??
+    numberSearchFunctions.find((element) => element.value == fn) ??
+    booleanSearchFunctions.find((element) => element.value == fn) ??
+    stringSearchFunctions[0]
+  )
 }

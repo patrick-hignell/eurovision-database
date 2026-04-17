@@ -26,12 +26,19 @@ function IconList({
       // style={{ width: `${3 * size}rem`, height: `${2.6 * size}rem` }}
       style={{ width: `${3 * size}rem` }}
     >
-      <div className="flex h-[65%] flex-col justify-center overflow-hidden align-middle">
+      <div
+        className="flex flex-col justify-center overflow-hidden align-middle"
+        style={{ height: `${2 * size}rem` }}
+      >
         {entry.images[0] ? (
           <img
-            className="flex"
             src={`/images/${entry.images[0]}.png`}
             alt={entry.images[0]}
+            style={{
+              height: '100%',
+              width: '100%',
+              objectFit: 'cover', // or 'contain'
+            }}
           />
         ) : (
           <i

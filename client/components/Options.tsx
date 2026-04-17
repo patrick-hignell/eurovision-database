@@ -71,7 +71,6 @@ function Options({
     { value: 'language', label: 'Language' },
     { value: 'position', label: 'Position' },
     { value: 'points', label: 'Points' },
-    { value: 'link', label: 'Link' },
     { value: 'costume', label: 'Costume' },
     { value: 'favourite', label: 'Favourite' },
   ]
