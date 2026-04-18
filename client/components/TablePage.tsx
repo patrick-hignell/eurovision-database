@@ -10,7 +10,6 @@ import {
   SearchArrayElement,
   TableOptions,
 } from '../../models/entry'
-import InfoPanel from './InfoPanel'
 import Gallery from './Gallery'
 import IconList from './IconList'
 import BasicSearch from './BasicSearch'
@@ -19,7 +18,6 @@ import Options from './Options'
 import Select, { MultiValue } from 'react-select'
 import { SingleValue } from 'react-select'
 import MediaQuery from 'react-responsive'
-import InfoPanelSmall from './InfoPanelSmall'
 import Filter from './Filter'
 import {
   capitalize,
@@ -27,6 +25,7 @@ import {
   numberSearchFunctions,
   booleanSearchFunctions,
 } from '../utils/main'
+import InfoPanelAdaptive from './InfoPanelAdaptive'
 
 export default function TablePage() {
   const {
@@ -154,11 +153,7 @@ export default function TablePage() {
   >([])
   const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
-  const [sortCategory, setSortCategory] = useState<Category>('costume')
-  const [sortOption, setSortOption] = useState<OptionType>({
-    value: 'costume',
-    label: 'Costume',
-  })
+
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
@@ -170,7 +165,18 @@ export default function TablePage() {
     searchMode: 'Filter',
     iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
   }
-  const [tableOptions, setTableOptions] = useState<TableOptions>(defaultOptions)
+
+  const savedTableState = loadTableStateFromLocalStorage()
+
+  const [tableOptions, setTableOptions] = useState<TableOptions>(
+    savedTableState?.tableOptions ?? defaultOptions,
+  )
+  const [sortOption, setSortOption] = useState<OptionType>(
+    savedTableState?.sortOption ?? { value: 'costume', label: 'Costume' },
+  )
+  const [sortCategory, setSortCategory] = useState<Category>(
+    (savedTableState?.sortCategory as Category) ?? 'costume',
+  )
 
   useEffect(() => {
     if (data) {
@@ -299,7 +305,7 @@ export default function TablePage() {
   useEffect(() => {
     updateUrl()
     saveToLocalStorage(filterOptions, favourites)
-  }, [filterOptions, favourites])
+  }, [filterOptions, favourites, tableOptions, sortOption, sortCategory])
 
   function extractFavouritesFromUrl(): number[] {
     let params = new URLSearchParams(window.location.search)
@@ -360,6 +366,11 @@ export default function TablePage() {
     if (favourites.length > 0) {
       params.set('favs', favourites.join(','))
     }
+
+    params.set('tableOptions', JSON.stringify(tableOptions))
+    params.set('sortOption', JSON.stringify(sortOption))
+    params.set('sortCategory', sortCategory)
+
     localStorage.setItem('eurovision_state', params.toString())
   }
 
@@ -367,6 +378,21 @@ export default function TablePage() {
     const raw = localStorage.getItem('eurovision_state')
     if (!raw) return null
     return new URLSearchParams(raw)
+  }
+
+  function loadTableStateFromLocalStorage() {
+    const raw = localStorage.getItem('eurovision_state')
+    if (!raw) return null
+    const params = new URLSearchParams(raw)
+    return {
+      tableOptions: params.get('tableOptions')
+        ? JSON.parse(params.get('tableOptions')!)
+        : null,
+      sortOption: params.get('sortOption')
+        ? JSON.parse(params.get('sortOption')!)
+        : null,
+      sortCategory: params.get('sortCategory') ?? null,
+    }
   }
 
   function extractFilterOptionsFromUrl(defaultFilter: FilterType): FilterType {
@@ -511,16 +537,17 @@ export default function TablePage() {
   if (isError) return <h2>{String(error)}</h2>
 
   return (
-    <div className="flex min-w-[32rem] flex-col gap-4 pb-8 pt-8 lg:w-5/6">
-      <h1 className="text-3xl font-bold underline">
+    <div className="flex min-w-0 flex-col gap-4 overflow-x-hidden pb-8 pt-8 lg:w-5/6">
+      <h1 className="font-['Delicious_Handrawn'] text-6xl font-normal">
         The Unofficial Eurovision Costume Database
       </h1>
-      <MediaQuery minWidth={1224}>
+      {/* <MediaQuery minWidth={1224}>
         <InfoPanel {...selectedEntry} />
       </MediaQuery>
       <MediaQuery maxWidth={1224}>
         <InfoPanelSmall {...selectedEntry} />
-      </MediaQuery>
+      </MediaQuery> */}
+      <InfoPanelAdaptive {...selectedEntry} />
       {selectedEntry.country != '' && (
         <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       )}
@@ -553,8 +580,8 @@ export default function TablePage() {
             />
           </div>
         )}
-        <div className="mb-4 flex w-full justify-between">
-          <div className="flex gap-1 rounded-xl bg-white bg-opacity-25 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+        <div className="mb-4 flex w-full justify-between gap-1 px-1">
+          <div className="flex gap-1 rounded-full bg-white bg-opacity-25 px-1 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button
               className="flex"
               onClick={() => handleCaretClick(sortCategory)}
@@ -571,22 +598,18 @@ export default function TablePage() {
               styles={{
                 control: (base) => ({
                   ...base,
-                  borderRadius: '0.75rem', // Tailwind rounded-xl
+                  borderRadius: '9999px', // Tailwind rounded-xl
                   border: '1px solid #d1d5db',
                 }),
-                menu: (base) => ({
-                  ...base,
-                  borderRadius: '0.75rem',
-                }),
               }}
-              className="w-40 lg:w-48"
+              className=" min-w-20 sm:w-40 lg:w-48"
               options={sortCategories}
               value={sortOption}
               onChange={(e) => handleSortOptionChange(e)}
             />
           </div>
           <div
-            className={`flex rounded-xl bg-white ${isFilterOpen ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+            className={`flex rounded-full bg-white ${isFilterOpen ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
           >
             <button className="flex" onClick={handleFilterOpenChange}>
               <MediaQuery minWidth={1224}>
@@ -597,7 +620,7 @@ export default function TablePage() {
               <i className="bi bi-funnel-fill pt-1 text-3xl"></i>
             </button>
           </div>
-          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div className="flex rounded-full bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button className="flex" onClick={handleStarClick}>
               <MediaQuery minWidth={1224}>
                 <p className="pr-1 pt-[0.4rem] text-xl">
@@ -609,7 +632,7 @@ export default function TablePage() {
               ></i>
             </button>
           </div>
-          <div className="flex rounded-xl bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div className="flex rounded-full bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
             <button className="flex" onClick={handleOptionsOpen}>
               <MediaQuery minWidth={1224}>
                 <p className="pr-1 pt-[0.4rem] text-xl">Options: </p>

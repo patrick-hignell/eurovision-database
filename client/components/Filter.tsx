@@ -48,12 +48,12 @@ export default function Filter({
     <div className="flex flex-col items-center">
       <div className="flex h-full flex-col gap-2 rounded-sm bg-white bg-opacity-10 p-2 outline outline-1 outline-white">
         {Object.entries(filterOptions).map(([optionKey, optionValue]) => (
-          <div key={optionKey} className="flex items-start gap-2">
-            <p className="mt-1 w-24 text-left text-xl md:w-28">
+          <div key={optionKey} className="flex flex-wrap items-start gap-2">
+            <p className="mt-1 w-full text-left text-xl sm:w-24 md:w-28">
               {capitalize(optionKey)}:{' '}
             </p>
             <Select
-              className="w-48"
+              className="w-full sm:w-48"
               options={getSearchFunction(optionKey)}
               value={optionValue.function}
               styles={{ menu: (base) => ({ ...base, marginTop: 0 }) }}
@@ -64,13 +64,14 @@ export default function Filter({
             {(optionValue.function.value === 'all' ||
               optionValue.function.value === 'favourites only' ||
               optionValue.function.value === 'non favourites only') && (
-              <div className="h-9 w-64 rounded-[0.2rem] bg-gray-200  p-1 outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-96" />
+              <div className="h-9 w-full rounded-[0.2rem] bg-gray-200 p-1  outline outline-1 outline-gray-300 focus:outline-2 focus:outline-black sm:w-64 lg:w-96" />
             )}
             {optionValue.function.value === 'multiple' && (
               <Select
                 isMulti
+                className="w-full sm:w-64 lg:w-96"
                 classNames={{
-                  control: () => 'min-h-[30px] w-64 lg:w-96 text-sm', // Force smaller height
+                  control: () => 'min-h-[30px] text-sm', // Force smaller height
                   valueContainer: () => 'p-0 px-2', // Remove vertical padding
                   dropdownIndicator: () =>
                     'p-0 pr-2 max-h-[90px] overflow-y-auto', // Slim down the arrow container
@@ -89,7 +90,7 @@ export default function Filter({
               optionValue.function.value !== 'favourites only' &&
               optionValue.function.value !== 'non favourites only' && (
                 <input
-                  className="h-9 w-64 rounded-[0.2rem] p-1 outline  outline-1 outline-gray-300 focus:outline-2 focus:outline-black lg:w-96"
+                  className="h-9 w-full rounded-[0.2rem] p-1 outline outline-1  outline-gray-300 focus:outline-2 focus:outline-black sm:w-64 lg:w-96"
                   value={optionValue.search}
                   onChange={(e) =>
                     handleFilterOptionsSearchChange(e, optionKey as Category)
