@@ -32,6 +32,7 @@ function IconList({
       >
         {entry.images[0] ? (
           <img
+            loading="lazy"
             src={`/images/${entry.images[0]}.png`}
             alt={entry.images[0]}
             style={{
