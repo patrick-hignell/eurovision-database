@@ -65,7 +65,10 @@ function IconList({
             />
           ))}
           {entries.length == 0 && (
-            <p>No entries available. Check your filter options.</p>
+            <p>
+              No entries currently available. Wait to load or check your filter
+              options.
+            </p>
           )}
         </div>
       </div>

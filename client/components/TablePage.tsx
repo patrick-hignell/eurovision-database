@@ -28,6 +28,135 @@ import {
 import InfoPanelAdaptive from './InfoPanelAdaptive'
 import Tour from './Tour'
 
+function loadTableStateFromLocalStorage() {
+  const raw = localStorage.getItem('eurovision_state')
+  if (!raw) return null
+  const params = new URLSearchParams(raw)
+  return {
+    tableOptions: params.get('tableOptions')
+      ? JSON.parse(params.get('tableOptions')!)
+      : null,
+    sortOption: params.get('sortOption')
+      ? JSON.parse(params.get('sortOption')!)
+      : null,
+    sortCategory: params.get('sortCategory') ?? null,
+    isTourOpen: params.get('isTourOpen') ? false : null,
+  }
+}
+
+const initialTableState = loadTableStateFromLocalStorage()
+
+const blankEntry: EntryWithImages = {
+  id: -1,
+  country: '',
+  year: '',
+  artist: '',
+  song: '',
+  language: '',
+  position: '',
+  points: '',
+  link: '',
+  costume: '',
+  images: [],
+  favourite: false,
+}
+
+const initialFilter: FilterEntry = {
+  country: { isExact: false, value: '', dir: 'asc' },
+  year: { isExact: false, value: '', dir: 'asc' },
+  artist: { isExact: false, value: '', dir: 'asc' },
+  song: { isExact: false, value: '', dir: 'asc' },
+  language: { isExact: false, value: '', dir: 'asc' },
+  position: { isExact: false, value: '', dir: 'asc' },
+  points: { isExact: false, value: '', dir: 'asc' },
+  link: { isExact: false, value: '', dir: 'asc' },
+  costume: { isExact: false, value: '', dir: 'desc' },
+  favourite: { isExact: false, value: '', dir: 'asc' },
+}
+
+const defaultFilter: FilterType = {
+  country: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  year: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  artist: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  song: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  language: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  position: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  points: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  link: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  costume: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+  favourite: {
+    function: { value: 'all', label: 'All' },
+    multiValue: [],
+    selectedMultiValue: [],
+    search: '',
+  },
+}
+
+const defaultOptions: TableOptions = {
+  tableMode: 'Icons',
+  gallerySize: 5,
+  iconSize: 5,
+  searchMode: 'Filter',
+  iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
+}
+
+const sortCategories: OptionType[] = [
+  { value: 'country', label: 'Country' },
+  { value: 'year', label: 'Year' },
+  { value: 'artist', label: 'Artist' },
+  { value: 'song', label: 'Song' },
+  { value: 'language', label: 'Language' },
+  { value: 'position', label: 'Position' },
+  { value: 'points', label: 'Points' },
+  { value: 'costume', label: 'Costume' },
+  { value: 'favourite', label: 'Favourite' },
+]
+
 export default function TablePage() {
   const {
     data: data,
@@ -38,108 +167,6 @@ export default function TablePage() {
     //add: addEntry,
     //edit: editEntry,
   } = useEntriesWithImages()
-
-  const blankEntry: EntryWithImages = {
-    id: -1,
-    country: '',
-    year: '',
-    artist: '',
-    song: '',
-    language: '',
-    position: '',
-    points: '',
-    link: '',
-    costume: '',
-    images: [],
-    favourite: false,
-  }
-  const initialFilter: FilterEntry = {
-    country: { isExact: false, value: '', dir: 'asc' },
-    year: { isExact: false, value: '', dir: 'asc' },
-    artist: { isExact: false, value: '', dir: 'asc' },
-    song: { isExact: false, value: '', dir: 'asc' },
-    language: { isExact: false, value: '', dir: 'asc' },
-    position: { isExact: false, value: '', dir: 'asc' },
-    points: { isExact: false, value: '', dir: 'asc' },
-    link: { isExact: false, value: '', dir: 'asc' },
-    costume: { isExact: false, value: '', dir: 'desc' },
-    favourite: { isExact: false, value: '', dir: 'asc' },
-  }
-
-  const defaultFilter: FilterType = {
-    country: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    year: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    artist: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    song: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    language: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    position: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    points: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    link: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    costume: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-    favourite: {
-      function: { value: 'all', label: 'All' },
-      multiValue: [],
-      selectedMultiValue: [],
-      search: '',
-    },
-  }
-
-  const sortCategories: OptionType[] = [
-    { value: 'country', label: 'Country' },
-    { value: 'year', label: 'Year' },
-    { value: 'artist', label: 'Artist' },
-    { value: 'song', label: 'Song' },
-    { value: 'language', label: 'Language' },
-    { value: 'position', label: 'Position' },
-    { value: 'points', label: 'Points' },
-    { value: 'costume', label: 'Costume' },
-    { value: 'favourite', label: 'Favourite' },
-  ]
 
   const [filterOptions, setFilterOptions] = useState<FilterType>(() =>
     extractFilterOptionsFromUrl(defaultFilter),
@@ -159,27 +186,22 @@ export default function TablePage() {
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const defaultOptions: TableOptions = {
-    tableMode: 'Icons',
-    gallerySize: 5,
-    iconSize: 5,
-    searchMode: 'Filter',
-    iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
-  }
-
-  const savedTableState = loadTableStateFromLocalStorage()
 
   const [tableOptions, setTableOptions] = useState<TableOptions>(
-    savedTableState?.tableOptions ?? defaultOptions,
+    initialTableState?.tableOptions ?? defaultOptions,
   )
   const [sortOption, setSortOption] = useState<OptionType>(
-    savedTableState?.sortOption ?? { value: 'costume', label: 'Costume' },
+    initialTableState?.sortOption ?? {
+      value: 'costume',
+      label: 'Costume',
+    },
   )
   const [sortCategory, setSortCategory] = useState<Category>(
-    (savedTableState?.sortCategory as Category) ?? 'costume',
+    () =>
+      (initialTableState?.sortCategory as Category) ?? ('costume' as Category),
   )
   const [isTourOpen, setIsTourOpen] = useState(
-    savedTableState?.isTourOpen ?? true,
+    initialTableState?.isTourOpen ?? true,
   )
 
   useEffect(() => {
@@ -191,47 +213,42 @@ export default function TablePage() {
           filter[sortCategory].dir,
         )
 
+        // Build the full multiValue lists in one pass
+        const updatedFilter = { ...filterOptions }
         postSortedEntries.forEach((entry) => {
-          setFilterOptions((prevFilter) => {
-            const updatedFilter = prevFilter
-            Object.entries(entry).forEach(([key, value]) => {
-              if (!updatedFilter[key as Category]) return
-              if (
-                !updatedFilter[key as Category].multiValue.some(
-                  (singleMulti) => singleMulti.value === value,
-                )
-              ) {
-                updatedFilter[key as Category].multiValue = [
-                  ...updatedFilter[key as Category].multiValue,
-                  { value: value, label: capitalize(value) },
-                ]
-              }
-            })
-
-            Object.keys(updatedFilter).forEach((key) => {
-              const numbers = updatedFilter[key as Category].multiValue.filter(
-                (singleMulti) => !isNaN(Number(singleMulti.value)),
+          Object.entries(entry).forEach(([key, value]) => {
+            if (!updatedFilter[key as Category]) return
+            if (
+              !updatedFilter[key as Category].multiValue.some(
+                (m) => m.value === value,
               )
-              const strings = updatedFilter[key as Category].multiValue.filter(
-                (singleMulti) => isNaN(Number(singleMulti.value)),
-              )
-
-              numbers.sort((a, b) => Number(a.value) - Number(b.value))
-
-              strings.sort((a, b) => a.value.localeCompare(b.value))
-
+            ) {
               updatedFilter[key as Category].multiValue = [
-                ...numbers,
-                ...strings,
+                ...updatedFilter[key as Category].multiValue,
+                { value: value, label: capitalize(String(value)) },
               ]
-            })
-
-            return updatedFilter
+            }
           })
         })
 
+        // Sort each multiValue list
+        Object.keys(updatedFilter).forEach((key) => {
+          const numbers = updatedFilter[key as Category].multiValue.filter(
+            (singleMulti) => !isNaN(Number(singleMulti.value)),
+          )
+          const strings = updatedFilter[key as Category].multiValue.filter(
+            (singleMulti) => isNaN(Number(singleMulti.value)),
+          )
+          numbers.sort((a, b) => Number(a.value) - Number(b.value))
+          strings.sort((a, b) => a.value.localeCompare(b.value))
+          updatedFilter[key as Category].multiValue = [...numbers, ...strings]
+        })
+
+        // ✅ One setState instead of one per entry
+        setFilterOptions(updatedFilter)
         setPreFilteredEntries(postSortedEntries)
         setOnLoad(false)
+
         // console.log('onload')
       } else {
         const postSortedEntries = sortIt(
@@ -383,22 +400,6 @@ export default function TablePage() {
     const raw = localStorage.getItem('eurovision_state')
     if (!raw) return null
     return new URLSearchParams(raw)
-  }
-
-  function loadTableStateFromLocalStorage() {
-    const raw = localStorage.getItem('eurovision_state')
-    if (!raw) return null
-    const params = new URLSearchParams(raw)
-    return {
-      tableOptions: params.get('tableOptions')
-        ? JSON.parse(params.get('tableOptions')!)
-        : null,
-      sortOption: params.get('sortOption')
-        ? JSON.parse(params.get('sortOption')!)
-        : null,
-      sortCategory: params.get('sortCategory') ?? null,
-      isTourOpen: params.get('isTourOpen') ? false : null,
-    }
   }
 
   function extractFilterOptionsFromUrl(defaultFilter: FilterType): FilterType {
@@ -559,7 +560,7 @@ export default function TablePage() {
     }))
   }
 
-  if (isPending) return <h2>Is Loading...</h2>
+  if (isPending) return <h2>Loading...</h2>
   if (isError) return <h2>{String(error)}</h2>
 
   return (
@@ -587,6 +588,10 @@ export default function TablePage() {
           handleResetOptions={handleResetOptions}
           updateIconCategoriesChange={handleIconCategoriesChange}
           handleTourOpen={handleTourOpen}
+          currentMode={tableOptions.tableMode}
+          currentGallerySize={tableOptions.gallerySize}
+          currentIconSize={tableOptions.iconSize}
+          currentIconCategories={tableOptions.iconCategories}
         />
       </DialogModal>
       <DialogModal isOpen={isTourOpen} onClose={handleTourClose}>

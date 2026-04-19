@@ -11,80 +11,82 @@ interface Props {
   handleResetOptions: () => void
   updateIconCategoriesChange: (newCategories: string[]) => void
   handleTourOpen: () => void
+  currentMode: string
+  currentGallerySize: number
+  currentIconSize: number
+  currentIconCategories: string[]
 }
+
+const defaultCategories: MultiValue<OptionType> = [
+  { value: 'country', label: 'Country' },
+  { value: 'year', label: 'Year' },
+  { value: 'artist', label: 'Artist' },
+  { value: 'song', label: 'Song' },
+  { value: 'favourite', label: 'Favourite' },
+]
+
+const modeList: OptionType[] = [
+  { value: 'Icons', label: 'Icons' },
+  { value: 'Spreadsheet', label: 'Spreadsheet' },
+]
+
+const sizeList: OptionType[] = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+  { value: '6', label: '6' },
+  { value: '7', label: '7' },
+  { value: '8', label: '8' },
+  { value: '9', label: '9' },
+  { value: '10', label: '10' },
+]
+
+const categoryList: OptionType[] = [
+  { value: 'country', label: 'Country' },
+  { value: 'year', label: 'Year' },
+  { value: 'artist', label: 'Artist' },
+  { value: 'song', label: 'Song' },
+  { value: 'language', label: 'Language' },
+  { value: 'position', label: 'Position' },
+  { value: 'points', label: 'Points' },
+  { value: 'costume', label: 'Costume' },
+  { value: 'favourite', label: 'Favourite' },
+]
 
 function Options({
   handleOptionsClose,
   updateModeChange,
-  updateSearchModeChange,
   updateGallerySizeChange,
   updateIconSizeChange,
   handleResetOptions,
   updateIconCategoriesChange,
   handleTourOpen,
+  currentMode,
+  currentGallerySize,
+  currentIconSize,
+  currentIconCategories,
 }: Props) {
-  const enableAdvancedSearch = false
-  const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
-  const [gallerySize, setGallerySize] = useState({ value: '5', label: '5' })
-  const [iconSize, setIconSize] = useState({ value: '5', label: '5' })
-
-  const defaultCategories: MultiValue<OptionType> = [
-    { value: 'country', label: 'Country' },
-    { value: 'year', label: 'Year' },
-    { value: 'artist', label: 'Artist' },
-    { value: 'song', label: 'Song' },
-    { value: 'favourite', label: 'Favourite' },
-  ]
-  const [iconCategories, setIconCategories] =
-    useState<MultiValue<OptionType>>(defaultCategories)
-  const [searchMode, setSearchMode] = useState({
-    value: 'Basic',
-    label: 'Basic',
+  const [mode, setMode] = useState({ value: currentMode, label: currentMode })
+  const [gallerySize, setGallerySize] = useState({
+    value: String(currentGallerySize),
+    label: String(currentGallerySize),
   })
-
-  const modeList: OptionType[] = [
-    { value: 'Icons', label: 'Icons' },
-    { value: 'Spreadsheet', label: 'Spreadsheet' },
-  ]
-
-  const sizeList: OptionType[] = [
-    { value: '1', label: '1' },
-    { value: '2', label: '2' },
-    { value: '3', label: '3' },
-    { value: '4', label: '4' },
-    { value: '5', label: '5' },
-    { value: '6', label: '6' },
-    { value: '7', label: '7' },
-    { value: '8', label: '8' },
-    { value: '9', label: '9' },
-    { value: '10', label: '10' },
-  ]
-
-  const searchModeList: OptionType[] = [
-    { value: 'Basic', label: 'Basic' },
-    { value: 'Advanced', label: 'Advanced' },
-  ]
-
-  const categoryList: OptionType[] = [
-    { value: 'country', label: 'Country' },
-    { value: 'year', label: 'Year' },
-    { value: 'artist', label: 'Artist' },
-    { value: 'song', label: 'Song' },
-    { value: 'language', label: 'Language' },
-    { value: 'position', label: 'Position' },
-    { value: 'points', label: 'Points' },
-    { value: 'costume', label: 'Costume' },
-    { value: 'favourite', label: 'Favourite' },
-  ]
+  const [iconSize, setIconSize] = useState({
+    value: String(currentIconSize),
+    label: String(currentIconSize),
+  })
+  const [iconCategories, setIconCategories] = useState<MultiValue<OptionType>>(
+    currentIconCategories.map((c) => ({
+      value: c,
+      label: c.charAt(0).toUpperCase() + c.slice(1),
+    })),
+  )
 
   function handleModeChange(e: SingleValue<OptionType>) {
     e && setMode(e)
     e && updateModeChange(e.value)
-  }
-
-  function handleSearchModeChange(e: SingleValue<OptionType>) {
-    e && setSearchMode(e)
-    e && updateSearchModeChange(e.value)
   }
 
   function handleGallerySizeChange(e: SingleValue<OptionType>) {
@@ -107,10 +109,6 @@ function Options({
     setMode({ value: 'Icons', label: 'Icons' })
     setGallerySize({ value: '5', label: '5' })
     setIconSize({ value: '5', label: '5' })
-    setSearchMode({
-      value: 'Basic',
-      label: 'Basic',
-    })
     setIconCategories(defaultCategories)
   }
 
@@ -127,18 +125,6 @@ function Options({
         </div>
         <div className="px-12">
           <h2 className="mb-1 text-2xl">Options</h2>
-
-          {enableAdvancedSearch && (
-            <div className="flex items-center justify-between p-4">
-              <p className="mr-6">Search Mode:</p>
-              <Select
-                className="w-48"
-                options={searchModeList}
-                value={searchMode}
-                onChange={(e) => handleSearchModeChange(e)}
-              />
-            </div>
-          )}
 
           <div className="flex items-center justify-between p-4">
             <p className="mr-6">Display Mode:</p>

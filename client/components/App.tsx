@@ -1,9 +1,17 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
+import QuickStart from './QuickStart'
+import DialogModal from './DialogModal'
 
 function App() {
+  const [isQuickStartOpen, setIsQuickStartOpen] = useState(false)
+
+  const handleQuickStartOpen = () => setIsQuickStartOpen(true)
+  const handleQuickStartClose = () => setIsQuickStartOpen(false)
+
   return (
     <div className="app flex w-[90%] flex-col text-center font-['rem'] font-[600] tracking-wide">
-      <h1 className="p-4 pb-16 font-['Delicious_Handrawn'] text-6xl font-normal">
+      <h1 className="py-8 font-['Delicious_Handrawn'] text-6xl font-normal">
         The Unofficial Eurovision Costume Database
       </h1>
       <div className="flex flex-col gap-4 text-2xl">
@@ -29,11 +37,20 @@ function App() {
           it!
         </p>
       </div>
-      <div className="my-16 flex justify-center pt-2 font-['Delicious_Handrawn'] text-7xl font-normal [word-spacing:0.5rem]">
+      <div className="my-10 flex justify-center pt-2 font-['Delicious_Handrawn'] text-7xl font-normal [word-spacing:0.5rem]">
         <div className="flex w-fit rounded-full bg-white bg-opacity-25 px-6 py-4 outline outline-1 outline-white hover:bg-opacity-75">
           <Link to="/table">Enter the Database</Link>
         </div>
       </div>
+      <p className="text-2xl"> Want some help?</p>
+      <div className="my-10 flex justify-center font-['Delicious_Handrawn'] text-7xl font-normal [word-spacing:0.5rem]">
+        <div className="flex w-fit rounded-full bg-white bg-opacity-25 px-6 py-4 outline outline-1 outline-white hover:bg-opacity-75">
+          <button onClick={handleQuickStartOpen}>Quick Start</button>
+        </div>
+      </div>
+      <DialogModal isOpen={isQuickStartOpen} onClose={handleQuickStartClose}>
+        <QuickStart />
+      </DialogModal>
     </div>
   )
 }
