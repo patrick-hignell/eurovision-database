@@ -119,3 +119,11 @@ export interface FilterCategory {
   selectedMultiValue: MultiValue<OptionType>
   search: string
 }
+
+export interface TourType {
+  icon?: string
+  text: string
+  button1: { label: string; fn: () => void }
+  button2: { label: string; fn: () => void }
+  highlight: string
+}
