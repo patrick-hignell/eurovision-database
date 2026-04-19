@@ -137,14 +137,6 @@ const defaultFilter: FilterType = {
   },
 }
 
-const defaultOptions: TableOptions = {
-  tableMode: 'Icons',
-  gallerySize: 5,
-  iconSize: 5,
-  searchMode: 'Filter',
-  iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
-}
-
 const sortCategories: OptionType[] = [
   { value: 'country', label: 'Country' },
   { value: 'year', label: 'Year' },
@@ -158,6 +150,13 @@ const sortCategories: OptionType[] = [
 ]
 
 export default function TablePage() {
+  const defaultOptions: TableOptions = {
+    tableMode: 'Icons',
+    gallerySize: 5,
+    iconSize: window.innerWidth > 768 ? 5 : 3,
+    searchMode: 'Filter',
+    iconCategories: ['country', 'year', 'artist', 'song', 'favourite'],
+  }
   const targetRef = useRef<HTMLDivElement>(null)
   const {
     data: data,
