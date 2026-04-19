@@ -114,7 +114,7 @@ function Options({
 
   return (
     <div className="flex h-full w-full items-center justify-center">
-      <div className="h-fit w-fit rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-4 pb-6 pt-4 outline outline-white">
+      <div className="h-fit w-fit max-w-[95%] rounded bg-gradient-to-tr from-[#ff9bf5] to-[#57d5d1] px-4 pb-6 pt-4 outline outline-white">
         <div className="flex w-full flex-row-reverse">
           <button
             className=" h-8  w-8 rounded bg-white bg-opacity-25 outline outline-white"
@@ -123,7 +123,7 @@ function Options({
             <i className="bi bi-x text-3xl"></i>
           </button>
         </div>
-        <div className="px-12">
+        <div className="sm:px-12">
           <h2 className="mb-1 text-2xl">Options</h2>
 
           <div className="flex items-center justify-between p-4">
@@ -161,7 +161,7 @@ function Options({
             <Select
               isMulti
               classNames={{
-                control: () => 'min-h-[30px] w-96 text-sm', // Force smaller height
+                control: () => 'min-h-[30px] md:w-[30rem] text-sm', // Force smaller height
                 valueContainer: () => 'p-0 px-2', // Remove vertical padding
                 dropdownIndicator: () => 'p-0 pr-2', // Slim down the arrow container
                 input: () => 'm-0 p-0', // Prevent input from pushing height
