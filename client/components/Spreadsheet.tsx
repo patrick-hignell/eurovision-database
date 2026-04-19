@@ -47,6 +47,12 @@ export default function Spreadsheet({
           ))}
         </tbody>
       </table>
+      {entries.length == 0 && (
+        <p>
+          No entries currently available. Wait to load or check your filter
+          options.
+        </p>
+      )}
     </div>
   )
 }
