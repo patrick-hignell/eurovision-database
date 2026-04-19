@@ -16,7 +16,7 @@ export default function InfoPanelAdaptive(entry: EntryWithImages) {
   }
 
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex w-full justify-center pt-4">
       <div className="w-[99%] rounded-sm bg-white bg-opacity-25 outline outline-1 outline-white">
         {entry.id == -1 && <p className="text-3xl">Select an entry to begin</p>}
         {entry.id !== -1 && (

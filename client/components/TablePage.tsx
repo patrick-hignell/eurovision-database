@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState, useRef } from 'react'
 import { useEntriesWithImages } from '../hooks/useEntriesWithImages'
 import Spreadsheet from './Spreadsheet'
 import {
@@ -158,6 +158,7 @@ const sortCategories: OptionType[] = [
 ]
 
 export default function TablePage() {
+  const targetRef = useRef<HTMLDivElement>(null)
   const {
     data: data,
     isPending,
@@ -430,9 +431,9 @@ export default function TablePage() {
 
   function handleCellClick(entry: EntryWithImages) {
     setSelectedEntry(entry)
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth', // use 'auto' for an instant jump
+    targetRef.current?.scrollIntoView({
+      behavior: 'smooth', // Smooth animation
+      block: 'start', // Vertical alignment: 'start', 'center', 'end', or 'nearest'
     })
   }
 
@@ -565,16 +566,14 @@ export default function TablePage() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4 overflow-x-hidden pb-8 pt-8 lg:w-5/6">
-      <h1 className="mb-3 font-['Delicious_Handrawn'] text-6xl font-normal">
+      <h1 className=" font-['Delicious_Handrawn'] text-6xl font-normal">
         The Unofficial Eurovision Costume Database
       </h1>
-      {/* <MediaQuery minWidth={1224}>
-        <InfoPanel {...selectedEntry} />
-      </MediaQuery>
-      <MediaQuery maxWidth={1224}>
-        <InfoPanelSmall {...selectedEntry} />
-      </MediaQuery> */}
-      <InfoPanelAdaptive {...selectedEntry} />
+
+      <div ref={targetRef}>
+        <InfoPanelAdaptive {...selectedEntry} />
+      </div>
+
       {selectedEntry.country != '' && (
         <Gallery entry={selectedEntry} size={tableOptions.gallerySize} />
       )}
