@@ -26,6 +26,7 @@ import {
   booleanSearchFunctions,
 } from '../utils/main'
 import InfoPanelAdaptive from './InfoPanelAdaptive'
+import Tour from './Tour'
 
 export default function TablePage() {
   const {
@@ -153,7 +154,7 @@ export default function TablePage() {
   >([])
   const [searchArray, setSearchArray] = useState<SearchArrayElement[]>()
   const [filter, setFilter] = useState<FilterEntry>(initialFilter)
-
+  const [tourHighlight, setTourHighlight] = useState('')
   const [selectedEntry, setSelectedEntry] =
     useState<EntryWithImages>(blankEntry)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
@@ -176,6 +177,9 @@ export default function TablePage() {
   )
   const [sortCategory, setSortCategory] = useState<Category>(
     (savedTableState?.sortCategory as Category) ?? 'costume',
+  )
+  const [isTourOpen, setIsTourOpen] = useState(
+    savedTableState?.isTourOpen ?? true,
   )
 
   useEffect(() => {
@@ -370,6 +374,7 @@ export default function TablePage() {
     params.set('tableOptions', JSON.stringify(tableOptions))
     params.set('sortOption', JSON.stringify(sortOption))
     params.set('sortCategory', sortCategory)
+    params.set('isTourOpen', String(isTourOpen))
 
     localStorage.setItem('eurovision_state', params.toString())
   }
@@ -392,6 +397,7 @@ export default function TablePage() {
         ? JSON.parse(params.get('sortOption')!)
         : null,
       sortCategory: params.get('sortCategory') ?? null,
+      isTourOpen: params.get('isTourOpen') ? false : null,
     }
   }
 
@@ -451,6 +457,11 @@ export default function TablePage() {
   const handleOptionsOpen = () => setIsOptionsOpen(true)
   const handleOptionsClose = () => setIsOptionsOpen(false)
 
+  function handleTourOpen() {
+    setIsTourOpen(true)
+  }
+  const handleTourClose = () => setIsTourOpen(false)
+
   const handleFilterOpenChange = () => setIsFilterOpen((prev) => !prev)
 
   function handleModeChange(newMode: string) {
@@ -479,6 +490,21 @@ export default function TablePage() {
 
   function handleResetOptions() {
     setTableOptions(defaultOptions)
+  }
+
+  function handleTourHighlight(highlight: string) {
+    setTourHighlight(highlight)
+  }
+
+  function handleResetFilter() {
+    setFilterOptions((prevFilterOptions) => {
+      const newFilterOptions: FilterType = { ...defaultFilter }
+      Object.keys(newFilterOptions).forEach((filterKey) => {
+        newFilterOptions[filterKey as Category].multiValue =
+          prevFilterOptions[filterKey as Category].multiValue
+      })
+      return newFilterOptions
+    })
   }
 
   function handleIconCategoriesChange(newCategories: string[]) {
@@ -538,7 +564,7 @@ export default function TablePage() {
 
   return (
     <div className="flex min-w-0 flex-col gap-4 overflow-x-hidden pb-8 pt-8 lg:w-5/6">
-      <h1 className="font-['Delicious_Handrawn'] text-6xl font-normal">
+      <h1 className="mb-3 font-['Delicious_Handrawn'] text-6xl font-normal">
         The Unofficial Eurovision Costume Database
       </h1>
       {/* <MediaQuery minWidth={1224}>
@@ -560,6 +586,13 @@ export default function TablePage() {
           updateIconSizeChange={handleIconSizeChange}
           handleResetOptions={handleResetOptions}
           updateIconCategoriesChange={handleIconCategoriesChange}
+          handleTourOpen={handleTourOpen}
+        />
+      </DialogModal>
+      <DialogModal isOpen={isTourOpen} onClose={handleTourClose}>
+        <Tour
+          handleTourClose={handleTourClose}
+          handleTourHighlight={handleTourHighlight}
         />
       </DialogModal>
       {isFilterOpen && (
@@ -568,6 +601,7 @@ export default function TablePage() {
           handleFilterOptionsFunctionChange={handleFilterOptionsFunctionChange}
           handleFilterOptionsMultiChange={handleFilterOptionsMultiChange}
           handleFilterOptionsSearchChange={handleFilterOptionsSearchChange}
+          handleResetFilter={handleResetFilter}
         />
       )}
       <div className="flex flex-col justify-center">
@@ -581,7 +615,9 @@ export default function TablePage() {
           </div>
         )}
         <div className="mb-4 flex w-full justify-between gap-1 px-1">
-          <div className="flex gap-1 rounded-full bg-white bg-opacity-25 px-1 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div
+            className={`flex gap-1 rounded-full bg-white bg-opacity-${tourHighlight == 'sort' ? '75' : '25'} px-1 pl-1 pr-[0.2rem] pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+          >
             <button
               className="flex"
               onClick={() => handleCaretClick(sortCategory)}
@@ -609,7 +645,7 @@ export default function TablePage() {
             />
           </div>
           <div
-            className={`flex rounded-full bg-white ${isFilterOpen ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+            className={`flex rounded-full bg-white ${isFilterOpen || tourHighlight == 'filter' ? 'bg-opacity-75' : 'bg-opacity-25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
           >
             <button className="flex" onClick={handleFilterOpenChange}>
               <MediaQuery minWidth={1224}>
@@ -620,7 +656,9 @@ export default function TablePage() {
               <i className="bi bi-funnel-fill pt-1 text-3xl"></i>
             </button>
           </div>
-          <div className="flex rounded-full bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div
+            className={`flex rounded-full bg-white bg-opacity-${tourHighlight == 'favourite' ? '75' : '25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+          >
             <button className="flex" onClick={handleStarClick}>
               <MediaQuery minWidth={1224}>
                 <p className="pr-1 pt-[0.4rem] text-xl">
@@ -632,7 +670,9 @@ export default function TablePage() {
               ></i>
             </button>
           </div>
-          <div className="flex rounded-full bg-white bg-opacity-25 px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75">
+          <div
+            className={`flex rounded-full bg-white bg-opacity-${tourHighlight == 'options' ? '75' : '25'} px-1 pt-[0.1rem] outline outline-1 outline-white hover:bg-opacity-75`}
+          >
             <button className="flex" onClick={handleOptionsOpen}>
               <MediaQuery minWidth={1224}>
                 <p className="pr-1 pt-[0.4rem] text-xl">Options: </p>
@@ -665,6 +705,7 @@ export default function TablePage() {
             size={tableOptions.iconSize}
             hasFilterRow={tableOptions.searchMode === 'Advanced'}
             categories={tableOptions.iconCategories}
+            tourHighlight={tourHighlight}
           />
         )}
       </div>

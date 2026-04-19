@@ -10,6 +10,7 @@ interface Props {
   updateIconSizeChange: (newSize: number) => void
   handleResetOptions: () => void
   updateIconCategoriesChange: (newCategories: string[]) => void
+  handleTourOpen: () => void
 }
 
 function Options({
@@ -20,6 +21,7 @@ function Options({
   updateIconSizeChange,
   handleResetOptions,
   updateIconCategoriesChange,
+  handleTourOpen,
 }: Props) {
   const enableAdvancedSearch = false
   const [mode, setMode] = useState({ value: 'Icons', label: 'Icons' })
@@ -186,10 +188,19 @@ function Options({
 
           <div className="flex justify-evenly">
             <button
-              className="mt-3 rounded bg-white bg-opacity-25 px-4 py-1 outline outline-white"
+              className="my-2 rounded-full bg-white bg-opacity-25 px-2 py-1 outline outline-1 outline-white hover:bg-opacity-75"
               onClick={handleReset}
             >
-              Reset
+              Reset Options
+            </button>
+            <button
+              className="my-2 rounded-full bg-white bg-opacity-25 px-2 py-1 outline outline-1 outline-white hover:bg-opacity-75"
+              onClick={() => {
+                handleOptionsClose()
+                handleTourOpen()
+              }}
+            >
+              Take the Tour
             </button>
           </div>
         </div>

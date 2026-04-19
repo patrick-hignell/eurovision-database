@@ -22,6 +22,7 @@ interface Props {
     e: ChangeEvent<HTMLInputElement>,
     category: Category,
   ) => void
+  handleResetFilter: () => void
 }
 
 export default function Filter({
@@ -29,6 +30,7 @@ export default function Filter({
   handleFilterOptionsFunctionChange,
   handleFilterOptionsMultiChange,
   handleFilterOptionsSearchChange,
+  handleResetFilter,
 }: Props) {
   function getSearchFunction(str: string) {
     switch (str) {
@@ -99,6 +101,14 @@ export default function Filter({
               )}
           </div>
         ))}
+        <div className="flex justify-center">
+          <button
+            className="my-2 rounded-full bg-white bg-opacity-25 px-2 py-1 text-xl outline outline-1 outline-white hover:bg-opacity-75"
+            onClick={handleResetFilter}
+          >
+            Reset Filter
+          </button>
+        </div>
       </div>
     </div>
   )
